@@ -8,21 +8,24 @@ use App\Models\Tenant;
 use App\Models\Subscription;
 use App\Models\Invoice;
 use App\Models\SubscriptionPayment;
+use App\Services\Payments\FlutterwaveGateway;
+use App\Services\Payments\PaystackGateway;
 use App\Services\TenantProvisionService;
 use App\Helpers\Qs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\JsonResponse;
 
 class ApiOnboardingController extends ApiBaseController
 {
-    protected $provisionService;
-
-    public function __construct(TenantProvisionService $provisionService)
-    {
-        $this->provisionService = $provisionService;
-    }
+    public function __construct(
+        protected TenantProvisionService $provisionService,
+        protected PaystackGateway $paystack,
+        protected FlutterwaveGateway $flutterwave,
+    ) {}
 
     /**
      * Get list of active subscription plans.
@@ -104,6 +107,9 @@ class ApiOnboardingController extends ApiBaseController
 
         $plan = Plan::where('slug', $request->plan_slug)->first();
 
+        // Hash the owner password immediately. Never store or forward plaintext.
+        $hashedPassword = Hash::make($request->owner_password);
+
         if ($request->payment_method === 'trial') {
             try {
                 $tenant = $this->provisionService->provision(
@@ -113,7 +119,7 @@ class ApiOnboardingController extends ApiBaseController
                     $request->school_email,
                     $request->owner_name,
                     $request->owner_email,
-                    $request->owner_password,
+                    $hashedPassword,
                     $request->billing_interval,
                     true // isTrial = true
                 );
@@ -147,7 +153,7 @@ class ApiOnboardingController extends ApiBaseController
                     'school_email' => $request->school_email,
                     'owner_name' => $request->owner_name,
                     'owner_email' => $request->owner_email,
-                    'owner_password' => $request->owner_password,
+                    'owner_password' => $hashedPassword, // Bcrypt hash, never the plaintext.
                     'amount' => $amount,
                     'payment_method' => $request->payment_method,
                     'status' => 'pending',
@@ -155,10 +161,21 @@ class ApiOnboardingController extends ApiBaseController
 
                 $tenant_hash = Qs::hash($pending->id);
 
-                // Set gateway keys
-                $publicKey = $request->payment_method === 'national' 
-                    ? env('PAYSTACK_PUBLIC_KEY', 'pk_test_6cb9ec87db8c028ba313faea2188ffcf769862df')
-                    : env('FLUTTERWAVE_PUBLIC_KEY', 'FLWPUBK_TEST-94ea1c8c56fa90e219ffc6e93e2b2fdf-X');
+                // Set gateway keys. Read from config so a missing env value
+                // surfaces as a clear "gateway_misconfigured" error to the
+                // mobile client instead of silently downgrading to a hardcoded
+                // test key (the old behaviour, which caused real charges to
+                // fail in prod with no diagnostic).
+                $publicKey = $request->payment_method === 'national'
+                    ? config('services.paystack.public_key')
+                    : config('services.flutterwave.public_key');
+
+                if (empty($publicKey)) {
+                    Log::error('Onboarding checkout attempted but public key is not configured.', [
+                        'payment_method' => $request->payment_method,
+                    ]);
+                    return $this->sendError('Gateway not configured.', ['gateway' => ['Contact support.']], 503);
+                }
 
                 return $this->sendResponse([
                     'provisioned' => false,
@@ -186,7 +203,14 @@ class ApiOnboardingController extends ApiBaseController
     }
 
     /**
-     * Verify payment status and provision space.
+     * Verify a client-reported payment reference and, if it verifies with the
+     * gateway, provision the tenant.
+     *
+     * This endpoint is called by the mobile app after the user completes
+     * checkout. It CANNOT trust the client — the reference is passed by
+     * the client, so the gateway itself must confirm the payment happened
+     * (and for the expected amount) before we do anything. Same rules as
+     * the webhook path in PaymentWebhookController.
      */
     public function verifyPayment(Request $request): JsonResponse
     {
@@ -202,6 +226,15 @@ class ApiOnboardingController extends ApiBaseController
         $reference = $request->reference;
         $gateway = $request->gateway;
 
+        // Idempotency: if this reference has already been successfully
+        // processed we short-circuit (a mobile retry, a webhook that already
+        // fired, etc.). Return 200 so the client stops asking.
+        if (SubscriptionPayment::where('reference', $reference)
+            ->where('status', 'successful')
+            ->exists()) {
+            return $this->sendResponse(['already_processed' => true], 'Payment previously verified.');
+        }
+
         $pending = PendingRegistration::where('reference', $reference)
                                      ->where('status', 'pending')
                                      ->first();
@@ -210,57 +243,102 @@ class ApiOnboardingController extends ApiBaseController
             return $this->sendError('Pending registration not found or already processed.', [], 404);
         }
 
-        try {
-            $tenant = $this->provisionService->provision(
-                $pending->plan,
-                $pending->subdomain,
-                $pending->school_name,
-                $pending->school_email,
-                $pending->owner_name,
-                $pending->owner_email,
-                $pending->owner_password,
-                $pending->billing_interval,
-                false, // isTrial = false (paid)
-                $reference
-            );
+        // Verify the payment with the gateway itself. Client-supplied
+        // reference is metadata; the gateway's own API is the source of truth.
+        $verification = $gateway === 'paystack'
+            ? $this->paystack->verify($reference)
+            : $this->flutterwave->verify($reference);
 
-            $pending->update(['status' => 'completed']);
-
-            // Create Payment Record
-            $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-            $invoice = Invoice::where('tenant_id', $tenant->id)->first();
-
-            if ($invoice) {
-                $invoice->update([
-                    'status' => 'paid',
-                    'paid_at' => now(),
-                ]);
-            }
-
-            SubscriptionPayment::create([
-                'subscription_id' => $subscription ? $subscription->id : null,
-                'invoice_id' => $invoice ? $invoice->id : null,
-                'amount' => $pending->amount,
-                'gateway' => $gateway,
+        if (!$verification->successful) {
+            Log::warning('Mobile verifyPayment: gateway rejected reference.', [
                 'reference' => $reference,
-                'status' => 'successful',
-                'meta' => $request->all(),
+                'gateway' => $gateway,
+                'reason' => $verification->failureReason,
             ]);
+            return $this->sendError('Payment not verified by gateway.', ['reason' => [$verification->failureReason]], 422);
+        }
 
-            $domain = $tenant->domains()->first();
-            $domainName = $domain ? $domain->domain : ($pending->subdomain . '.' . request()->getHost());
+        // Amount check: never provision if the gateway says less was paid
+        // than we quoted. Compare in minor units (kobo/cents) to avoid
+        // float traps.
+        $expectedMinor = (int) round(((float) $pending->amount) * 100);
+        if ($verification->amountMinor < $expectedMinor) {
+            Log::warning('Mobile verifyPayment: amount mismatch.', [
+                'reference' => $reference,
+                'expected_minor' => $expectedMinor,
+                'paid_minor' => $verification->amountMinor,
+            ]);
+            return $this->sendError('Amount mismatch.', [], 422);
+        }
 
-            return $this->sendResponse([
-                'provisioned' => true,
-                'tenant_id' => $tenant->id,
-                'subdomain' => $pending->subdomain,
-                'domain' => $domainName,
-                'redirect_url' => 'http://' . $domainName . '/login'
-            ], 'Workspace provisioned successfully post payment.');
+        try {
+            $tenant = DB::transaction(function () use ($pending, $gateway, $verification, $reference) {
+                $tenant = $this->provisionService->provision(
+                    plan: $pending->plan,
+                    subdomain: $pending->subdomain,
+                    schoolName: $pending->school_name,
+                    schoolEmail: $pending->school_email,
+                    ownerName: $pending->owner_name,
+                    ownerEmail: $pending->owner_email,
+                    hashedPassword: $pending->owner_password, // already bcrypt (Batch 2).
+                    billingInterval: $pending->billing_interval,
+                    isTrial: false,
+                    paymentRef: $reference,
+                );
 
-        } catch (\Exception $e) {
+                $pending->update(['status' => 'completed']);
+
+                $subscription = Subscription::where('tenant_id', $tenant->id)
+                    ->orderByDesc('created_at')->first();
+                $invoice = Invoice::where('tenant_id', $tenant->id)
+                    ->orderByDesc('created_at')->first();
+
+                if ($invoice) {
+                    $invoice->update(['status' => 'paid', 'paid_at' => now()]);
+                }
+
+                // Unique index on `reference` makes concurrent duplicates
+                // throw QueryException — the outer catch turns that into
+                // the same "already_processed" success response.
+                SubscriptionPayment::create([
+                    'subscription_id' => $subscription?->id,
+                    'invoice_id' => $invoice?->id,
+                    'amount' => $verification->amountMinor / 100,
+                    'gateway' => $gateway,
+                    'reference' => $reference,
+                    'status' => 'successful',
+                    'meta' => [
+                        'source' => 'api_verify_payment',
+                        'gateway_status' => $verification->raw['data']['status'] ?? null,
+                        'currency' => $verification->currency,
+                    ],
+                ]);
+
+                return $tenant;
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            $code = $e->errorInfo[1] ?? null;
+            if ($code === 1062 || $e->getCode() === '23000') {
+                return $this->sendResponse(['already_processed' => true], 'Payment previously verified.');
+            }
+            Log::error('Mobile verifyPayment DB error.', ['reference' => $reference, 'error' => $e->getMessage()]);
+            return $this->sendError('Provisioning failed.', ['exception' => [$e->getMessage()]], 500);
+        } catch (\Throwable $e) {
+            Log::error('Mobile verifyPayment failed.', ['reference' => $reference, 'error' => $e->getMessage()]);
             return $this->sendError('Provisioning failed during verification.', ['exception' => [$e->getMessage()]], 500);
         }
+
+        $domain = $tenant->domains()->first();
+        $domainName = $domain ? $domain->domain : ($pending->subdomain . '.' . (request()?->getHost() ?? config('app.tenant_domain_suffix', 'localhost')));
+        $scheme = config('app.tenant_scheme', 'https');
+
+        return $this->sendResponse([
+            'provisioned' => true,
+            'tenant_id' => $tenant->id,
+            'subdomain' => $pending->subdomain,
+            'domain' => $domainName,
+            'redirect_url' => $scheme . '://' . $domainName . '/login',
+        ], 'Workspace provisioned successfully post payment.');
     }
 
     /**
@@ -295,14 +373,15 @@ class ApiOnboardingController extends ApiBaseController
             $pending->delete();
 
             $domain = $tenant->domains()->first();
-            $domainName = $domain ? $domain->domain : ($pending->subdomain . '.' . request()->getHost());
+            $domainName = $domain ? $domain->domain : ($pending->subdomain . '.' . (request()?->getHost() ?? config('app.tenant_domain_suffix', 'localhost')));
+            $scheme = config('app.tenant_scheme', 'https');
 
             return $this->sendResponse([
                 'provisioned' => true,
                 'tenant_id' => $tenant->id,
                 'subdomain' => $pending->subdomain,
                 'domain' => $domainName,
-                'redirect_url' => 'http://' . $domainName . '/login'
+                'redirect_url' => $scheme . '://' . $domainName . '/login',
             ], 'Workspace converted and provisioned as free trial.');
 
         } catch (\Exception $e) {

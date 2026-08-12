@@ -506,6 +506,48 @@ class Qs
         return Setting::all();
     }
 
+    /**
+     * Resolve the per-tenant report-card theme.
+     *
+     * Each tenant may override any of the four color slots by writing
+     * a `settings` row with one of the whitelisted keys below:
+     *
+     *   report_primary_color   — headings, table-header text, subject-name emphasis
+     *   report_soft_color      — table-header fill, remark-body fill (light)
+     *   report_border_color    — outer border, table hairlines
+     *   report_accent_color    — reserved for a secondary accent (school-name burgundy, etc.)
+     *
+     * Values are validated to be `#rgb` or `#rrggbb`. Anything else
+     * falls through to the neutral default so a stray setting can't
+     * inject arbitrary CSS into the printed report.
+     */
+    public static function getReportTheme(): array
+    {
+        $defaults = [
+            'primary' => '#1f2937', // slate-800  (headings)
+            'soft'    => '#f3f4f6', // slate-100  (fills)
+            'border'  => '#374151', // slate-700  (rules)
+            'accent'  => '#4b5563', // slate-600  (secondary)
+        ];
+
+        $keys = [
+            'primary' => 'report_primary_color',
+            'soft'    => 'report_soft_color',
+            'border'  => 'report_border_color',
+            'accent'  => 'report_accent_color',
+        ];
+
+        $isHex = fn ($v) => is_string($v) && preg_match('/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i', $v);
+
+        $theme = [];
+        foreach ($keys as $slot => $settingKey) {
+            $raw = self::getSetting($settingKey);
+            $theme[$slot] = $isHex($raw) ? $raw : $defaults[$slot];
+        }
+
+        return $theme;
+    }
+
     public static function getCurrentSession()
     {
         return self::getSetting('current_session');

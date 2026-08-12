@@ -190,10 +190,18 @@ return [
     ],
 
     /**
-     * Parameters used by the tenants:seed command.
+     * Parameters used by the tenants:seed command AND by Stancl's
+     * SeedDatabase job at tenant creation time.
+     *
+     * Production uses DatabaseSeederProduction, which seeds ONLY
+     * reference/lookup data — never demo users like superadmin/superadmin
+     * that ship in the fixture DatabaseSeeder.
+     *
+     * Local dev / demo environments can override via the
+     * TENANT_SEEDER env var if they want the full fixture set.
      */
     'seeder_parameters' => [
-        '--class' => 'DatabaseSeeder', // root seeder class
+        '--class' => env('TENANT_SEEDER', 'Database\\Seeders\\DatabaseSeederProduction'),
         '--force' => true,
     ],
 ];

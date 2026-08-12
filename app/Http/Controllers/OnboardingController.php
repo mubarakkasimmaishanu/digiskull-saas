@@ -76,6 +76,12 @@ class OnboardingController extends Controller
 
         $plan = Plan::where('slug', $request->plan_slug)->firstOrFail();
 
+        // Hash the owner password IMMEDIATELY on capture. It's never stored
+        // plaintext — not in pending_registrations, not in logs, not in
+        // downstream service calls. The provisioner accepts a pre-hashed
+        // value and inserts it verbatim.
+        $hashedPassword = Hash::make($request->owner_password);
+
         if ($request->payment_method === 'trial') {
             // Provision 14-day trial immediately
             $tenant = $this->provisionService->provision(
@@ -85,7 +91,7 @@ class OnboardingController extends Controller
                 $request->school_email,
                 $request->owner_name,
                 $request->owner_email,
-                $request->owner_password,
+                $hashedPassword,
                 $request->billing_interval,
                 true // isTrial
             );
@@ -108,7 +114,7 @@ class OnboardingController extends Controller
                 'school_email' => $request->school_email,
                 'owner_name' => $request->owner_name,
                 'owner_email' => $request->owner_email,
-                'owner_password' => $request->owner_password, // we will hash this inside provisioner, save plain/hashed here
+                'owner_password' => $hashedPassword, // Bcrypt hash, never the plaintext.
                 'amount' => $amount,
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',

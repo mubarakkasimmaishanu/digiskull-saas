@@ -51,6 +51,48 @@ class Mk extends Qs
         return AssessmentRecord::where(["student_id" => $student_id, "subject_id" => $sub_id, "exam_id" => $exam_id])->get()->first();
     }
 
+    /**
+     * Senior Secondary report card column: 1st Continuous Assessment.
+     * Mirrors the existing derived-marks convention rather than adding
+     * new persisted columns — see decision log in the SS report-card
+     * refactor: ca1 == the already-computed tca (total continuous assessment).
+     *
+     * Returns null when the record is missing so views can render a dash.
+     */
+    public static function getCA1($as)
+    {
+        if (!$as) return null;
+        return $as->tca !== null && (int) $as->tca !== 0 ? (int) $as->tca : null;
+    }
+
+    /**
+     * Senior Secondary report card column: 2nd Continuous Assessment.
+     * Derived as the mean of the 10 course-work slots (cw1..cw10),
+     * rounded to a whole number so it lines up with a typical 0-20 scale
+     * printed alongside the 1st CA. Returns null when nothing was recorded.
+     */
+    public static function getCA2($as)
+    {
+        if (!$as) return null;
+
+        $slots = [
+            $as->cw1, $as->cw2, $as->cw3, $as->cw4, $as->cw5,
+            $as->cw6, $as->cw7, $as->cw8, $as->cw9, $as->cw10,
+        ];
+
+        $sum = array_sum($slots);
+        return $sum === 0 ? null : (int) round($sum / 10);
+    }
+
+    /**
+     * Senior Secondary report card column: Exam Score. Thin alias so views
+     * don't have to know about the underlying `exm` column name.
+     */
+    public static function getExamScore($as)
+    {
+        return $as && $as->exm !== null ? (int) $as->exm : null;
+    }
+
     // Base method for marks - must be used for all the functions rendering content in marks tabulation view - for consistent, uniform rendering
     public static function getDistinctMrksSbjcts($data)
     {

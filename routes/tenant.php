@@ -277,6 +277,7 @@ Route::middleware([
                     Route::post('selected/year/{id}', 'AssessmentController@year_selected')->name('assessments.year_select');
                     Route::get('detailed/print/{id}/{exam_id}/{year}', 'AssessmentController@print_detailed')->name('assessments.print_detailed');
                     Route::get('minimal/print/{id}/{exam_id}/{year}', 'AssessmentController@print_minimal')->name('assessments.print_minimal');
+                    Route::get('ss/print/{id}/{exam_id}/{year}', 'AssessmentController@print_senior_secondary')->name('assessments.print_ss');
                 });
 
                 // Exam Edit State - true/false

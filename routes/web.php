@@ -37,9 +37,9 @@ Route::prefix('onboard')->group(function () {
 // Central APIs
 Route::get('/api/check-subdomain', [App\Http\Controllers\OnboardingController::class, 'checkSubdomain'])->name('api.check_subdomain');
 
-// Central Webhooks
-Route::post('/webhook/paystack', [App\Http\Controllers\PaymentWebhookController::class, 'paystackWebhook'])->name('webhook.paystack');
-Route::post('/webhook/flutterwave', [App\Http\Controllers\PaymentWebhookController::class, 'flutterwaveWebhook'])->name('webhook.flutterwave');
+// Payment webhooks moved to routes/webhooks.php under `api/webhooks/*`
+// (outside the `web` CSRF group, gated by per-gateway signature middleware).
+// Route names 'webhook.paystack' / 'webhook.flutterwave' are preserved there.
 
 Route::group(['middleware' => ['auth', 'checkForPassUpdate', 'itGuy', 'handleCookie']], function () {
     /*************** Two factor authentication *****************/

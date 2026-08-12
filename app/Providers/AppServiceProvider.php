@@ -20,7 +20,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Payment gateway verifiers. Constructor-injected credentials so
+        // controllers/services can type-hint the concrete class without
+        // reaching into config() and so tests can bind fakes cleanly.
+        $this->app->singleton(\App\Services\Payments\PaystackGateway::class, function () {
+            return new \App\Services\Payments\PaystackGateway(
+                secretKey: (string) config('services.paystack.secret_key', ''),
+                verifyUrl: (string) config('services.paystack.verify_url'),
+            );
+        });
+
+        $this->app->singleton(\App\Services\Payments\FlutterwaveGateway::class, function () {
+            return new \App\Services\Payments\FlutterwaveGateway(
+                secretKey: (string) config('services.flutterwave.secret_key', ''),
+                verifyUrl: (string) config('services.flutterwave.verify_url'),
+            );
+        });
     }
 
     /**

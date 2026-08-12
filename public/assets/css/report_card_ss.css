@@ -1,0 +1,349 @@
+/*
+ * Senior Secondary Report Card — scoped stylesheet.
+ *
+ * All rules live under `.ss-report` so they can't leak into the rest of
+ * the admin shell (which is still on Bootstrap/Limitless). Tokens are
+ * defined once at the top so a school can rebrand by editing four
+ * variables without touching layout rules.
+ *
+ * Kept deliberately in plain CSS (no Tailwind build) so printing is
+ * predictable across Chromium / WebKit / Gecko and the file can be
+ * dropped into any tenant without a compile step.
+ */
+
+.ss-report {
+    /*
+     * Neutral defaults. Every tenant overrides these four slots via the
+     * inline `style` block emitted by senior_secondary.blade.php from
+     * Qs::getReportTheme(). Keys backing them:
+     *   --sr-primary   ← settings.report_primary_color
+     *   --sr-soft      ← settings.report_soft_color
+     *   --sr-border    ← settings.report_border_color
+     *   --sr-accent    ← settings.report_accent_color   (reserved)
+     */
+    --sr-primary: #1f2937;
+    --sr-soft:    #f3f4f6;
+    --sr-border:  #374151;
+    --sr-accent:  #4b5563;
+
+    --sr-ink:      #1f1f24;
+    --sr-muted:    #6b7280;
+    --sr-hairline: #d1d5db;
+
+    box-sizing: border-box;
+    color: var(--sr-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 18px;
+    border: 2px solid var(--sr-border);
+    background: #ffffff;
+}
+
+.ss-report *,
+.ss-report *::before,
+.ss-report *::after {
+    box-sizing: inherit;
+}
+
+/* ---------- Header block ---------- */
+.ss-report__header {
+    display: grid;
+    grid-template-columns: 90px 1fr 90px;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--sr-border);
+}
+
+.ss-report__logo,
+.ss-report__crest {
+    width: 84px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--sr-border);
+    color: var(--sr-primary);
+    font-weight: 600;
+    background: #fff;
+    object-fit: contain;
+}
+
+.ss-report__logo img,
+.ss-report__crest img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.ss-report__title {
+    text-align: center;
+}
+
+.ss-report__title-school {
+    color: var(--sr-primary);
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.ss-report__title-tagline {
+    color: var(--sr-primary);
+    font-size: 11px;
+    margin: 2px 0 6px;
+    font-style: italic;
+}
+
+.ss-report__title-report {
+    color: var(--sr-primary);
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ---------- Student info + next term box ---------- */
+.ss-report__meta {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--sr-border);
+}
+
+.ss-report__student h3 {
+    color: var(--sr-primary);
+    font-size: 13px;
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+
+.ss-report__student p {
+    margin: 2px 0;
+    font-size: 12px;
+}
+
+.ss-report__student .name {
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.ss-report__next-term {
+    border-collapse: collapse;
+    border: 1px solid var(--sr-border);
+    font-size: 11px;
+    min-width: 260px;
+}
+
+.ss-report__next-term th,
+.ss-report__next-term td {
+    border: 1px solid var(--sr-border);
+    padding: 6px 10px;
+    text-align: center;
+}
+
+.ss-report__next-term th {
+    background: var(--sr-soft);
+    color: var(--sr-primary);
+    font-weight: 600;
+    font-size: 10px;
+}
+
+/* ---------- Subjects table ---------- */
+.ss-report__subjects {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 11px;
+}
+
+.ss-report__subjects thead th {
+    background: var(--sr-soft);
+    color: var(--sr-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    border: 1px solid var(--sr-border);
+    padding: 8px 6px;
+    text-align: center;
+}
+
+.ss-report__subjects tbody td {
+    border: 1px solid var(--sr-hairline);
+    padding: 6px 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.ss-report__subjects tbody td.subject-name {
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ss-report__subjects tbody td.remark {
+    text-align: left;
+    font-style: italic;
+    color: var(--sr-ink);
+    max-width: 130px;
+}
+
+.ss-report__subjects tbody td.grade {
+    color: var(--sr-primary);
+    font-weight: 700;
+}
+
+/* ---------- Two-column skills grid ---------- */
+.ss-report__skills {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.ss-report__skill-card {
+    border: 1px solid var(--sr-border);
+}
+
+.ss-report__skill-card h4 {
+    background: var(--sr-soft);
+    color: var(--sr-primary);
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0;
+    padding: 6px 10px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--sr-border);
+}
+
+.ss-report__skill-card table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.ss-report__skill-card th,
+.ss-report__skill-card td {
+    padding: 4px 8px;
+    border-bottom: 1px solid var(--sr-hairline);
+    text-align: left;
+}
+
+.ss-report__skill-card th.rating-head {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--sr-primary);
+}
+
+.ss-report__skill-card td.rating {
+    text-align: center;
+    color: var(--sr-primary);
+    font-weight: 700;
+    letter-spacing: 4px;
+    width: 40%;
+}
+
+.ss-report__skill-card td.remark {
+    text-align: right;
+    font-size: 10px;
+    color: var(--sr-muted);
+}
+
+/* ---------- Attendance strip ---------- */
+.ss-report__attendance {
+    margin-top: 14px;
+    padding: 8px 12px;
+    border: 1px solid var(--sr-hairline);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    font-size: 11px;
+}
+
+.ss-report__attendance .row-2 {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--sr-hairline);
+}
+
+.ss-report__attendance span.value {
+    text-decoration: underline;
+    font-weight: 500;
+    padding-left: 4px;
+}
+
+/* ---------- Remarks block ---------- */
+.ss-report__remarks {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 11px;
+    border: 1px solid var(--sr-border);
+}
+
+.ss-report__remarks th,
+.ss-report__remarks td {
+    border: 1px solid var(--sr-border);
+    padding: 10px;
+    vertical-align: top;
+}
+
+.ss-report__remarks th {
+    background: var(--sr-soft);
+    color: var(--sr-primary);
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 10px;
+    width: 150px;
+}
+
+.ss-report__remarks td.remark-body {
+    font-style: italic;
+    background: var(--sr-soft);
+}
+
+.ss-report__remarks td.signature {
+    width: 160px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--sr-primary);
+}
+
+.ss-report__remarks td.signature .label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sr-muted);
+    display: block;
+    margin-top: 4px;
+}
+
+/* ---------- Print rules ---------- */
+@media print {
+    body {
+        background: #fff;
+    }
+    .ss-report {
+        margin: 0 auto;
+        border-width: 2px;
+        page-break-inside: avoid;
+    }
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
+    /* Hide any admin chrome that might slip through when printing from the app. */
+    .no-print,
+    .top-menu,
+    .go-to-bottom,
+    #offline-alert {
+        display: none !important;
+    }
+}

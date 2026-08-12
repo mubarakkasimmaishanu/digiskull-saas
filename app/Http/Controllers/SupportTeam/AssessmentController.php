@@ -34,7 +34,7 @@ class AssessmentController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            new Middleware('teamSAT', except: ['show', 'year_selected', 'year_selector', 'print_detailed'])
+            new Middleware('teamSAT', except: ['show', 'year_selected', 'year_selector', 'print_detailed', 'print_senior_secondary'])
         ];
     }
 
@@ -511,6 +511,56 @@ class AssessmentController extends Controller implements HasMiddleware
         return view('pages.support_team.assessments.print.detailed', $d);
     }
 
+    /**
+     * Render the new Senior Secondary report card (purple-themed layout
+     * introduced with the Report Cards UI refactor). Mirrors the auth
+     * gates used by print_detailed so the SS variant honours the same
+     * "student/parent may view own record; teamSAT may view any" contract.
+     */
+    public function print_senior_secondary($student_id, $exam_id, $year)
+    {
+        /* Prevent print if the super admin disabled it - applies to everyone except super admin. */
+        if (!Mk::getSetting('allow_assessmentsheet_print') && !Mk::userIsSuperAdmin())
+            return redirect()->back()->with('pop_error', __('msg.denied'));
+
+        /* Prevent other students/parents from viewing someone else's report. */
+        if (auth()->id() != $student_id && !Mk::userIsTeamSAT() && !Mk::userIsMyChild($student_id, auth()->id()))
+            return redirect(route('dashboard'))->with('pop_error', __('msg.denied'));
+
+        if (Mk::examIsLocked() && !Mk::userIsTeamSA()) {
+            Session::put('assessments_url', route('assessments.show', [Mk::hash($student_id), $year]));
+
+            if (!$this->checkPinVerified($student_id))
+                return redirect()->route('pins.enter', Mk::hash($student_id));
+        }
+
+        if (!$this->verifyStudentExamYear($student_id, $year))
+            return $this->noStudentRecord();
+
+        $wh = ['student_id' => $student_id, 'exam_id' => $exam_id, 'year' => $year];
+        $d['assessments_records'] = $asrs = $this->assessment->getRecords($wh);
+
+        if ($asrs->isEmpty())
+            return back()->with('flash_danger', __('msg.srnf'));
+
+        $d['asr'] = $asr = $asrs->first();
+        $d['my_class'] = $mc = $this->my_class->find($asr->my_class_id);
+        $d['section'] = $this->my_class->findSection($asr->section_id);
+        $d['ex'] = $exam = $this->exam->find($exam_id);
+        $d['tex'] = "tex{$exam->term}";
+        $d['sr'] = $this->student->getRecord(['user_id' => $student_id])->first();
+        $d['class_type'] = $this->my_class->findTypeByClass($mc->id);
+        $d['subjects'] = $this->my_class->findSubjectByClass($mc->id);
+        $d['ct'] = $d['class_type']->code;
+        $d['year'] = $year;
+        $d['student_id'] = $student_id;
+        $d['exam_id'] = $exam_id;
+        $d['skills'] = $this->exam->getSkillByClassType() ?: null;
+        $d['settings'] = \App\Helpers\Qs::getSettings();
+
+        return view('pages.support_team.assessments.print.senior_secondary', $d);
+    }
+
     public function print_minimal($student_id, $exam_id, $year)
     {
         /* Prevent Other Students/Parents from viewing Result of others */
@@ -571,7 +621,12 @@ class AssessmentController extends Controller implements HasMiddleware
 
     public function comment_update(Request $req, $as_id)
     {
-        $d = Mk::userIsTeamSA() ? $req->only(['t_comment', 'p_comment']) : $req->only(['t_comment']);
+        // Team SA (Super Admin / Admin) may edit the principal + examination-officer
+        // remark rows added for the SS report card; everyone else on teamSAT is
+        // limited to the class-tutor comment.
+        $d = Mk::userIsTeamSA()
+            ? $req->only(['t_comment', 'p_comment', 'exam_officer_comment'])
+            : $req->only(['t_comment']);
 
         $this->assessment->updateRecord(['id' => $as_id], $d);
 

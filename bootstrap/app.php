@@ -24,6 +24,16 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->prefix('api/saas')
                     ->namespace('App\\Http\\Controllers\\Api')
                     ->group(base_path('routes/central_api.php'));
+
+                // Payment gateway webhooks. Deliberately OUTSIDE the `web`
+                // group so CSRF doesn't 419 them, and OUTSIDE `api/saas` so
+                // per-gateway signature middleware is applied surgically to
+                // the right endpoint (see routes/webhooks.php).
+                Route::middleware('api')
+                    ->domain($domain)
+                    ->prefix('api/webhooks')
+                    ->namespace('App\\Http\\Controllers')
+                    ->group(base_path('routes/webhooks.php'));
             }
 
             Route::middleware('web')
@@ -60,6 +70,8 @@ return Application::configure(basePath: dirname(__DIR__))
             '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
             'itGuy' => \App\Http\Middleware\Custom\ITGuy::class,
             'subscriptionActive' => \App\Http\Middleware\EnsureSubscriptionIsActive::class,
+            'paystack.signature' => \App\Http\Middleware\VerifyPaystackSignature::class,
+            'flutterwave.signature' => \App\Http\Middleware\VerifyFlutterwaveSignature::class,
         ]);
         $middleware->encryptCookies(except: [
             'do_not_show_els_with_these_ids_again',
