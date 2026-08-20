@@ -58,6 +58,10 @@ class HomeController extends Controller
 
     public function dashboard(Request $request)
     {
+        if (Qs::userIsAccountant()) {
+            return redirect()->route('accountant.dashboard');
+        }
+
         $unviewed_notices = $viewed_notices = $d = [];
         $unviewed_count = 0; // Unviewed notices count
 
