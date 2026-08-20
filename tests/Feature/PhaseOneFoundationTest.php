@@ -106,16 +106,17 @@ class PhaseOneFoundationTest extends TestCase
         ]);
 
         // Register Student User
+        $randCode = substr(md5(uniqid(mt_rand(), true)), 0, 8);
         $user = User::create([
             'name' => 'AMINA SANI',
-            'username' => 'TEST/ST/' . rand(1000, 9999),
-            'email' => 'amina' . rand(100, 999) . '@test.com',
+            'username' => 'TEST/ST/' . $randCode,
+            'email' => 'amina_' . $randCode . '@test.com',
             'user_type' => 'student',
             'gender' => 'Female',
             'religion' => 'Islam',
             'dob' => '2010-05-12',
             'password' => Hash::make('student'),
-            'code' => 'CODE' . rand(100, 999),
+            'code' => 'C_' . $randCode,
         ]);
 
         $sr = StudentRecord::create([

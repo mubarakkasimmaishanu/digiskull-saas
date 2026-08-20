@@ -23,7 +23,6 @@ use App\Services\SmsService;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Stancl\Tenancy\Facades\Tenancy;
 use Tests\TestCase;
 
 class PhaseThreeAccountingAndFinanceTest extends TestCase
@@ -36,16 +35,21 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['app.url' => 'http://demo.localhost']);
+        $this->withServerVariables([
+            'HTTP_HOST' => 'demo.localhost',
+            'SERVER_NAME' => 'demo.localhost',
+        ]);
         $this->tenant = Tenant::first();
         if ($this->tenant) {
-            Tenancy::initialize($this->tenant);
+            tenancy()->initialize($this->tenant);
         }
     }
 
     protected function tearDown(): void
     {
         if ($this->tenant) {
-            Tenancy::end();
+            tenancy()->end();
         }
         parent::tearDown();
     }
@@ -56,37 +60,46 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
     protected function createTestEnvironment(string $suffix = '')
     {
         $suffix = $suffix ?: uniqid();
-        $classType = ClassType::firstOrCreate(['name' => 'JSS', 'code' => 'J']);
+        $classType = ClassType::first() ?: ClassType::create(['name' => 'JSS ' . $suffix, 'code' => 'J' . substr($suffix, 0, 2), 'subjects_considered' => 10]);
 
+        $uniqueName = 'JSS 1 ' . $suffix . '_' . rand(1000, 9999);
         $class = MyClass::create([
-            'name' => 'JSS 1 ' . $suffix,
+            'name' => $uniqueName,
             'class_type_id' => $classType->id,
         ]);
 
         $section = Section::create([
-            'name' => 'A',
+            'name' => 'A_' . rand(100, 999),
             'my_class_id' => $class->id,
             'active' => 1,
         ]);
 
+        $randUid = uniqid();
+
         // Parent User
         $parentUser = User::create([
             'name' => 'Alhaji Parent ' . $suffix,
-            'username' => 'parent_' . $suffix,
-            'email' => 'parent_' . $suffix . '@example.com',
+            'username' => 'par_' . $randUid,
+            'email' => 'par_' . $randUid . '@example.com',
             'password' => bcrypt('secret'),
             'user_type' => 'parent',
+            'religion' => 'Islam',
             'phone' => '08031234567',
+            'code' => 'P' . substr(md5(uniqid(mt_rand(), true)), 0, 8),
+            'password_updated_at' => now(),
         ]);
 
         // Student User
         $studentUser = User::create([
             'name' => 'Ibrahim Student ' . $suffix,
-            'username' => 'student_' . $suffix,
-            'email' => 'student_' . $suffix . '@example.com',
+            'username' => 'stu_' . $randUid,
+            'email' => 'stu_' . $randUid . '@example.com',
             'password' => bcrypt('secret'),
             'user_type' => 'student',
+            'religion' => 'Islam',
             'gender' => 'Male',
+            'code' => 'S' . substr(md5(uniqid(mt_rand(), true)), 0, 8),
+            'password_updated_at' => now(),
         ]);
 
         $studentRecord = StudentRecord::create([
@@ -94,35 +107,46 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
             'my_class_id' => $class->id,
             'section_id' => $section->id,
             'my_parent_id' => $parentUser->id,
-            'adm_no' => 'ADM/' . strtoupper($suffix),
+            'adm_no' => 'ADM/' . strtoupper($randUid),
             'session' => $this->sessionYear,
+            'ps_name' => 'Primary Academy',
+            'p_status' => 'Together',
         ]);
 
         // Accountant User
         $accountantUser = User::create([
             'name' => 'Bursar Danladi ' . $suffix,
-            'username' => 'acct_' . $suffix,
-            'email' => 'acct_' . $suffix . '@example.com',
+            'username' => 'acc_' . $randUid,
+            'email' => 'acc_' . $randUid . '@example.com',
             'password' => bcrypt('secret'),
             'user_type' => 'accountant',
+            'religion' => 'Islam',
+            'code' => 'A' . substr(md5(uniqid(mt_rand(), true)), 0, 8),
+            'password_updated_at' => now(),
         ]);
 
         // Super Admin User
         $superAdmin = User::create([
             'name' => 'Principal Admin ' . $suffix,
-            'username' => 'admin_' . $suffix,
-            'email' => 'admin_' . $suffix . '@example.com',
+            'username' => 'adm_' . $randUid,
+            'email' => 'adm_' . $randUid . '@example.com',
             'password' => bcrypt('secret'),
             'user_type' => 'super_admin',
+            'religion' => 'Islam',
+            'code' => 'SA' . substr(md5(uniqid(mt_rand(), true)), 0, 8),
+            'password_updated_at' => now(),
         ]);
 
         // Teacher User
         $teacherUser = User::create([
             'name' => 'Mr Teacher ' . $suffix,
-            'username' => 'teacher_' . $suffix,
-            'email' => 'teacher_' . $suffix . '@example.com',
+            'username' => 'tch_' . $randUid,
+            'email' => 'tch_' . $randUid . '@example.com',
             'password' => bcrypt('secret'),
             'user_type' => 'teacher',
+            'religion' => 'Islam',
+            'code' => 'T' . substr(md5(uniqid(mt_rand(), true)), 0, 8),
+            'password_updated_at' => now(),
         ]);
 
         return compact(
@@ -199,7 +223,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
         $pr = PaymentRecord::where(['student_id' => $env['studentUser']->id, 'payment_id' => $payment->id])->first();
 
         // 1st Installment: Pay 20,000 (Partial)
-        $receipt1 = $financialRepo->recordPayment($pr->id, 20000, 'Cash', 'TEL-001', $this->sessionYear);
+        $receipt1 = $financialRepo->recordPayment($pr->id, 20000, 'Cash', 'TEL-' . uniqid(), $this->sessionYear);
         $pr->refresh();
 
         $this->assertEquals(20000, $pr->amt_paid);
@@ -213,7 +237,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
         $this->assertFalse($summary1['is_cleared']);
 
         // 2nd Installment: Pay 40,000 (Full Settlement)
-        $receipt2 = $financialRepo->recordPayment($pr->id, 40000, 'Bank Transfer', 'POS-002', $this->sessionYear);
+        $receipt2 = $financialRepo->recordPayment($pr->id, 40000, 'Bank Transfer', 'POS-' . uniqid(), $this->sessionYear);
         $pr->refresh();
 
         $this->assertEquals(60000, $pr->amt_paid);
@@ -236,8 +260,11 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
         $financialRepo = app(FinancialRepo::class);
 
         $exam = Exam::create([
-            'name' => '1st Term Examination',
+            'name' => '1st Term Examination ' . uniqid(),
             'term' => 1,
+            'category_id' => 1,
+            'class_type_id' => $env['class']->class_type_id,
+            'exam_student_position_by_value' => 'total',
             'year' => $this->sessionYear,
         ]);
 
@@ -253,11 +280,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
 
         // Act as teacher/exam officer viewing report card while fees are unpaid
         $response = $this->actingAs($env['teacherUser'])
-            ->get(route('exam_officer.report_card', [
-                'student_id' => $env['studentUser']->id,
-                'exam_id' => $exam->id,
-                'year' => $this->sessionYear,
-            ]));
+            ->get("http://demo.localhost/exam-officer/report-card/{$env['studentUser']->id}/{$exam->id}/{$this->sessionYear}");
 
         $response->assertStatus(200);
         // Expect locked banner and warning
@@ -270,11 +293,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
 
         // Verify report card is now automatically unlocked
         $responseAfterPay = $this->actingAs($env['teacherUser'])
-            ->get(route('exam_officer.report_card', [
-                'student_id' => $env['studentUser']->id,
-                'exam_id' => $exam->id,
-                'year' => $this->sessionYear,
-            ]));
+            ->get("http://demo.localhost/exam-officer/report-card/{$env['studentUser']->id}/{$exam->id}/{$this->sessionYear}");
 
         $responseAfterPay->assertStatus(200);
         $responseAfterPay->assertDontSee('Report Card Locked — School Fees Not Paid');
@@ -360,23 +379,37 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
     {
         $env = $this->createTestEnvironment('sec');
 
-        // Accountant cannot access score entry submit
+        $subject = Subject::create([
+            'name' => 'Sec Subject ' . uniqid(),
+            'slug' => 'sec-' . uniqid(),
+            'my_class_id' => $env['class']->id,
+            'teacher_id' => $env['teacherUser']->id,
+        ]);
+
+        $exam = Exam::create([
+            'name' => 'Sec Exam ' . uniqid(),
+            'term' => 1,
+            'category_id' => 1,
+            'class_type_id' => $env['class']->class_type_id,
+            'exam_student_position_by_value' => 'total',
+            'year' => $this->sessionYear,
+        ]);
+
+        // Accountant cannot access teacher score submit
         $response1 = $this->actingAs($env['accountantUser'])
-            ->post(route('teacher.scores.submit'), [
-                'subject_id' => 1,
-                'section_id' => $env['section']->id,
-                'exam_id' => 1,
+            ->post("http://demo.localhost/teacher/my-subjects/{$subject->id}/{$env['section']->id}/scores/submit", [
+                'exam_id' => $exam->id,
             ]);
         $this->assertTrue(in_array($response1->status(), [403, 302]));
 
         // Accountant can access accountant dashboard
         $response2 = $this->actingAs($env['accountantUser'])
-            ->get(route('accountant.dashboard'));
+            ->get("http://demo.localhost/accountant");
         $response2->assertStatus(200);
 
         // Regular teacher cannot access accountant dashboard
         $response3 = $this->actingAs($env['teacherUser'])
-            ->get(route('accountant.dashboard'));
+            ->get("http://demo.localhost/accountant");
         $this->assertTrue(in_array($response3->status(), [403, 302]));
     }
 
@@ -398,7 +431,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
             'teacher_id' => $env['teacherUser']->id,
         ]);
 
-        $attendanceRepo->markSectionAttendance(
+        $attendanceRepo->markAttendanceForDate(
             $env['section']->id,
             Carbon::now()->format('Y-m-d'),
             [$env['studentRecord']->id => 'present'],
@@ -408,39 +441,44 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
 
         // Step B: Phase 2 — Exam and Scores
         $exam = Exam::create([
-            'name' => 'Annual Promotion Exam',
+            'name' => 'Annual Promotion Exam ' . uniqid(),
             'term' => 3,
+            'category_id' => 1,
+            'class_type_id' => $env['class']->class_type_id,
+            'exam_student_position_by_value' => 'total',
             'year' => $this->sessionYear,
         ]);
 
         Grade::firstOrCreate([
             'name' => 'A',
             'class_type_id' => $env['class']->class_type_id,
+        ], [
             'mark_from' => 70,
             'mark_to' => 100,
             'remark' => 'Excellent',
+            'point' => 5,
+            'credit' => 1,
         ]);
 
-        $scoreRepo->saveScores(
-            $exam->id,
-            $env['class']->id,
-            $env['section']->id,
+        $scoreRepo->saveDraftScores(
             $subject->id,
-            [$env['studentUser']->id => ['ca1' => 18, 'ca2' => 19, 'exam' => 55]],
-            $this->sessionYear
+            $env['section']->id,
+            $exam->id,
+            $this->sessionYear,
+            [$env['studentUser']->id => ['ca1' => 18, 'ca2' => 19, 'exm' => 55]],
+            $env['teacherUser']->id
         );
 
-        $submission = $scoreRepo->submitScorePackage(
-            $exam->id,
-            $env['class']->id,
-            $env['section']->id,
+        $submission = $scoreRepo->submitScores(
             $subject->id,
-            $env['teacherUser']->id,
-            $this->sessionYear
+            $env['section']->id,
+            $exam->id,
+            $this->sessionYear,
+            $env['teacherUser']->id
         );
 
         $scoreRepo->approveSubmission($submission->id, $env['superAdmin']->id);
-        $scoreRepo->generateExamResults($exam->id, $env['class']->id, $env['section']->id, $this->sessionYear);
+        $scoreRepo->calculateOverallResults($env['class']->id, $env['section']->id, $exam->id, $this->sessionYear);
 
         // Step C: Phase 3 — Fee Invoicing
         $payment = Payment::create([
@@ -455,11 +493,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
 
         // Check report card is locked
         $resLocked = $this->actingAs($env['teacherUser'])
-            ->get(route('exam_officer.report_card', [
-                'student_id' => $env['studentUser']->id,
-                'exam_id' => $exam->id,
-                'year' => $this->sessionYear,
-            ]));
+            ->get("http://demo.localhost/exam-officer/report-card/{$env['studentUser']->id}/{$exam->id}/{$this->sessionYear}");
         $resLocked->assertStatus(200);
         $resLocked->assertSee('Report Card Locked — School Fees Not Paid');
 
@@ -470,11 +504,7 @@ class PhaseThreeAccountingAndFinanceTest extends TestCase
 
         // Step E: Report Card is Unlocked and shows full academic & attendance report
         $resUnlocked = $this->actingAs($env['teacherUser'])
-            ->get(route('exam_officer.report_card', [
-                'student_id' => $env['studentUser']->id,
-                'exam_id' => $exam->id,
-                'year' => $this->sessionYear,
-            ]));
+            ->get("http://demo.localhost/exam-officer/report-card/{$env['studentUser']->id}/{$exam->id}/{$this->sessionYear}");
         $resUnlocked->assertStatus(200);
         $resUnlocked->assertDontSee('Report Card Locked — School Fees Not Paid');
         $resUnlocked->assertSee('STUDENT ACADEMIC PERFORMANCE REPORT');

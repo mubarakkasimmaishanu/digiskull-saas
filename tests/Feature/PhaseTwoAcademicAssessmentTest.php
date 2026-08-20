@@ -172,13 +172,14 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $session = '2026-2027';
 
+        $uid = uniqid();
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
         $jss1 = MyClass::firstOrCreate(['name' => 'JSS 1'], ['class_type_id' => $ct->id]);
-        $sec = Section::create(['name' => 'S2_' . rand(100, 999), 'my_class_id' => $jss1->id]);
-        $eng = Subject::create(['name' => 'English Studies ' . rand(100, 999), 'my_class_id' => $jss1->id, 'slug' => 'ENG' . rand(10, 99), 'core' => 1]);
+        $sec = Section::create(['name' => 'S2_' . $uid, 'my_class_id' => $jss1->id]);
+        $eng = Subject::create(['name' => 'English Studies ' . $uid, 'my_class_id' => $jss1->id, 'slug' => 'ENG' . substr($uid, 0, 4), 'core' => 1]);
 
         $exam = Exam::create([
-            'name' => 'First Term Examination ' . rand(100, 999),
+            'name' => 'First Term Examination ' . $uid,
             'year' => $session,
             'term' => 1,
             'category_id' => 1,
@@ -188,24 +189,24 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $teacher = User::create([
             'name' => 'MR. ENGLISH TEACHER',
-            'username' => 'teng_' . rand(100, 999),
-            'email' => 'teng_' . rand(100, 999) . '@test.com',
+            'username' => 'teng_' . $uid,
+            'email' => 'teng_' . $uid . '@test.com',
             'user_type' => 'teacher',
             'religion' => 'Christianity',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'TE' . rand(100, 999),
+            'code' => 'TE' . substr(md5($uid), 0, 8),
         ]);
 
         $examOfficer = User::create([
             'name' => 'MRS. EXAM OFFICER',
-            'username' => 'eo_' . rand(100, 999),
-            'email' => 'eo_' . rand(100, 999) . '@test.com',
+            'username' => 'eo_' . $uid,
+            'email' => 'eo_' . $uid . '@test.com',
             'user_type' => 'admin',
             'religion' => 'Islam',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'EO' . rand(100, 999),
+            'code' => 'EO' . substr(md5($uid . 'eo'), 0, 8),
         ]);
 
         $scoreRepo = new AssessmentScoreRepo();
@@ -331,13 +332,14 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $session = '2026-2027';
 
+        $uid4 = uniqid();
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
         $jss1 = MyClass::firstOrCreate(['name' => 'JSS 1'], ['class_type_id' => $ct->id]);
-        $sec = Section::create(['name' => 'S4_' . rand(100, 999), 'my_class_id' => $jss1->id]);
-        $math = Subject::create(['name' => 'Mathematics ' . rand(100, 999), 'my_class_id' => $jss1->id, 'slug' => 'MTH' . rand(10, 99), 'core' => 1]);
+        $sec = Section::create(['name' => 'S4_' . $uid4, 'my_class_id' => $jss1->id]);
+        $math = Subject::create(['name' => 'Mathematics ' . $uid4, 'my_class_id' => $jss1->id, 'slug' => 'MTH' . substr($uid4, 0, 4), 'core' => 1]);
 
         $exam = Exam::create([
-            'name' => 'First Term Examination ' . rand(100, 999),
+            'name' => 'First Term Examination ' . $uid4,
             'year' => $session,
             'term' => 1,
             'category_id' => 1,
@@ -347,14 +349,14 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $stUser = User::create([
             'name' => 'FATIMA BELLO',
-            'username' => 'ST/' . rand(1000, 9999),
-            'email' => 'fatima_' . rand(100, 999) . '@test.com',
+            'username' => 'ST/' . $uid4,
+            'email' => 'fatima_' . $uid4 . '@test.com',
             'user_type' => 'student',
             'religion' => 'Islam',
             'gender' => 'Female',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'STF' . rand(100, 999),
+            'code' => 'STF' . substr(md5($uid4), 0, 8),
         ]);
 
         $sr = StudentRecord::create([
@@ -386,13 +388,13 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $admin = User::create([
             'name' => 'EXAM CONTROLLER',
-            'username' => 'adm_' . rand(100, 999),
-            'email' => 'adm_' . rand(100, 999) . '@test.com',
+            'username' => 'adm_' . $uid4,
+            'email' => 'adm_' . $uid4 . '@test.com',
             'user_type' => 'admin',
             'religion' => 'Islam',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'ADM' . rand(100, 999),
+            'code' => 'ADM' . substr(md5($uid4 . 'adm'), 0, 8),
         ]);
 
         $this->actingAs($admin);

@@ -155,7 +155,7 @@ class FinancialRepo
                 'balance' => $new_balance,
                 'paid' => $is_paid,
             ];
-            if ($ref_no) {
+            if ($ref_no && empty($pr->ref_no)) {
                 $updateData['ref_no'] = $ref_no;
             }
             $pr->update($updateData);
