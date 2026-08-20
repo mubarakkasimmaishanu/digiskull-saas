@@ -25,4 +25,9 @@ class MyClass extends Eloquent
     {
         return $this->hasMany(StudentRecord::class);
     }
+
+    public function subjects()
+    {
+        return $this->hasMany(Subject::class);
+    }
 }

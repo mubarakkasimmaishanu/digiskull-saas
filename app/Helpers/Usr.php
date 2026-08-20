@@ -345,8 +345,9 @@ class Usr extends Qs
         return $remove ? array_values(array_diff($statuses, $remove)) : $statuses;
     }
 
-    public static function getTenantAwarePhoto(string $url): string
+    public static function getTenantAwarePhoto(?string $url = null): string
     {
+        $url = $url ?: 'global_assets/images/user.png';
         return self::tenancyInitilized() ? (str_contains($url, 'global_assets') ? asset($url) : tenant_asset($url)) : asset($url);
     }
 

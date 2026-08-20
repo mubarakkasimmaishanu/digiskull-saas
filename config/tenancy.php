@@ -51,8 +51,11 @@ return [
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => 'tenant',
-        'suffix' => 'sms',
+        // Each tenant DB is named `digiskul_tenant_<id>` — Digiskul-specific
+        // so it never collides with legacy Eduos databases (tenant1sms, …)
+        // that might still sit alongside on the same MySQL server.
+        'prefix' => 'digiskul_tenant_',
+        'suffix' => '',
 
         /**
          * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.

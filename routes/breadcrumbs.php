@@ -548,3 +548,129 @@ Breadcrumbs::for('test', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Test', route('test'));
 });
+
+// Attendance
+Breadcrumbs::for('attendance.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Attendance Registers', route('attendance.index'));
+});
+
+Breadcrumbs::for('attendance.show', function (BreadcrumbTrail $trail, $section_id, $date = null) {
+    $trail->parent('attendance.index');
+    $trail->push('Daily Register', route('attendance.show', [$section_id, $date]));
+});
+
+Breadcrumbs::for('attendance.section_report', function (BreadcrumbTrail $trail, $section_id) {
+    $trail->parent('attendance.index');
+    $trail->push('Section Attendance Report', route('attendance.section_report', $section_id));
+});
+
+Breadcrumbs::for('attendance.student_report', function (BreadcrumbTrail $trail, $student_id) {
+    $trail->parent('attendance.index');
+    $trail->push('Student Attendance Record', route('attendance.student_report', $student_id));
+});
+
+// Teacher Dashboard
+Breadcrumbs::for('teacher.my_class', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('My Classes', route('teacher.my_class'));
+});
+
+Breadcrumbs::for('teacher.class_detail', function (BreadcrumbTrail $trail, $section_id) {
+    $trail->parent('teacher.my_class');
+    $trail->push('Class Roster & Details', route('teacher.class_detail', $section_id));
+});
+
+Breadcrumbs::for('teacher.my_subjects', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('My Subjects', route('teacher.my_subjects'));
+});
+
+Breadcrumbs::for('teacher.subject_students', function (BreadcrumbTrail $trail, $subject_id, $section_id) {
+    $trail->parent('teacher.my_subjects');
+    $trail->push('Subject Class Students', route('teacher.subject_students', [$subject_id, $section_id]));
+});
+
+Breadcrumbs::for('teacher.scores.index', function (BreadcrumbTrail $trail, $subject_id, $section_id, $exam_id = null) {
+    $trail->parent('teacher.subject_students', $subject_id, $section_id);
+    $trail->push('Enter Scores', route('teacher.scores.index', [$subject_id, $section_id, $exam_id]));
+});
+
+Breadcrumbs::for('teacher.academic_review', function (BreadcrumbTrail $trail, $section_id, $exam_id = null) {
+    $trail->parent('teacher.class_detail', $section_id);
+    $trail->push('Academic Review', route('teacher.academic_review', [$section_id, $exam_id]));
+});
+
+// Exam Officer Workspace
+Breadcrumbs::for('exam_officer.dashboard', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Exam Officer Hub', route('exam_officer.dashboard'));
+});
+
+Breadcrumbs::for('exam_officer.submissions', function (BreadcrumbTrail $trail) {
+    $trail->parent('exam_officer.dashboard');
+    $trail->push('Score Submissions', route('exam_officer.submissions'));
+});
+
+Breadcrumbs::for('exam_officer.review', function (BreadcrumbTrail $trail, $submission_id) {
+    $trail->parent('exam_officer.submissions');
+    $trail->push('Review Score Sheet', route('exam_officer.review', $submission_id));
+});
+
+Breadcrumbs::for('exam_officer.missing_scores', function (BreadcrumbTrail $trail) {
+    $trail->parent('exam_officer.dashboard');
+    $trail->push('Missing Scores Audit', route('exam_officer.missing_scores'));
+});
+
+Breadcrumbs::for('exam_officer.results_generation', function (BreadcrumbTrail $trail) {
+    $trail->parent('exam_officer.dashboard');
+    $trail->push('Results & Positions Generation', route('exam_officer.results_generation'));
+});
+
+Breadcrumbs::for('exam_officer.report_card', function (BreadcrumbTrail $trail, $student_id, $exam_id, $year = null) {
+    $trail->parent('exam_officer.dashboard');
+    $trail->push('Report Card', route('exam_officer.report_card', [$student_id, $exam_id, $year]));
+});
+
+Breadcrumbs::for('exam_officer.bulk_report_cards', function (BreadcrumbTrail $trail) {
+    $trail->parent('exam_officer.dashboard');
+    $trail->push('Bulk Report Cards', route('exam_officer.bulk_report_cards'));
+});
+
+// Accountant Workspace (Phase 3)
+Breadcrumbs::for('accountant.dashboard', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Accountant Hub', route('accountant.dashboard'));
+});
+
+Breadcrumbs::for('accountant.students', function (BreadcrumbTrail $trail) {
+    $trail->parent('accountant.dashboard');
+    $trail->push('Student Financial Directory', route('accountant.students'));
+});
+
+Breadcrumbs::for('accountant.student_fees', function (BreadcrumbTrail $trail, $student_id) {
+    $trail->parent('accountant.students');
+    $trail->push('Manage Student Fees', route('accountant.student_fees', $student_id));
+});
+
+Breadcrumbs::for('accountant.invoices', function (BreadcrumbTrail $trail) {
+    $trail->parent('accountant.dashboard');
+    $trail->push('Fee Invoices', route('accountant.invoices'));
+});
+
+Breadcrumbs::for('accountant.analytics', function (BreadcrumbTrail $trail) {
+    $trail->parent('accountant.dashboard');
+    $trail->push('Financial Analytics', route('accountant.analytics'));
+});
+
+Breadcrumbs::for('accountant.sms_reminders', function (BreadcrumbTrail $trail) {
+    $trail->parent('accountant.dashboard');
+    $trail->push('Bulk SMS Reminders', route('accountant.sms_reminders'));
+});
+
+Breadcrumbs::for('accountant.receipts', function (BreadcrumbTrail $trail, $receipt_id) {
+    $trail->parent('accountant.dashboard');
+    $trail->push('Payment Receipt #' . $receipt_id, route('accountant.receipts', $receipt_id));
+});
+
+

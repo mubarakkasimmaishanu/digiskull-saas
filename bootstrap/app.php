@@ -69,6 +69,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'myParent' => \App\Http\Middleware\Custom\MyParent::class,
             '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
             'itGuy' => \App\Http\Middleware\Custom\ITGuy::class,
+            'teacher.subject' => \App\Http\Middleware\Custom\TeacherOwnsSubject::class,
+            'teacher.class' => \App\Http\Middleware\Custom\TeacherOwnsClass::class,
             'subscriptionActive' => \App\Http\Middleware\EnsureSubscriptionIsActive::class,
             'paystack.signature' => \App\Http\Middleware\VerifyPaystackSignature::class,
             'flutterwave.signature' => \App\Http\Middleware\VerifyFlutterwaveSignature::class,

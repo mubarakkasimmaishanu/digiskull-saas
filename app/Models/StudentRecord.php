@@ -67,6 +67,11 @@ class StudentRecord extends Eloquent
         return $this->hasMany(Promotion::class, 'student_id');
     }
 
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'student_record_id');
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

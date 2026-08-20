@@ -62,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'message_media_heading_color',
         'firebase_device_token',
         'hidden_alert_ids',
+        'password_updated_at',
     ];
 
     /**

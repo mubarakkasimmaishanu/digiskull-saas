@@ -304,6 +304,58 @@ Route::middleware([
                     Route::put('record/update/{rec_id}', 'SubjectController@update_record')->name('subjects.update_record');
                 });
 
+                /*************** Attendance (spec Phase 1) *****************/
+                Route::group(['prefix' => 'attendance', 'middleware' => 'teamSATC'], function () {
+                    Route::get('/', 'AttendanceController@index')->name('attendance.index');
+                    Route::get('student/{student_id}', 'AttendanceController@student_report')->name('attendance.student_report');
+                    Route::get('{section_id}/report', 'AttendanceController@section_report')->name('attendance.section_report');
+                    Route::get('{section_id}/{date?}', 'AttendanceController@show')->name('attendance.show');
+                    Route::post('{section_id}/{date}', 'AttendanceController@store')->name('attendance.store');
+                });
+
+                /*************** Teacher Dashboard (Class & Subject Teacher) *****************/
+                Route::group(['prefix' => 'teacher', 'middleware' => 'teamSAT'], function () {
+                    Route::get('my-class', 'TeacherDashboardController@my_class')->name('teacher.my_class');
+                    Route::get('my-class/{section_id}', 'TeacherDashboardController@class_detail')->name('teacher.class_detail');
+                    Route::get('my-class/{section_id}/academic-review/{exam_id?}', 'TeacherDashboardController@academic_review')->name('teacher.academic_review');
+                    Route::get('my-subjects', 'TeacherDashboardController@my_subjects')->name('teacher.my_subjects');
+                    Route::get('my-subjects/{subject_id}/{section_id}', 'TeacherDashboardController@subject_students')->name('teacher.subject_students');
+                    Route::get('my-subjects/{subject_id}/{section_id}/scores/{exam_id?}', 'TeacherScoreController@index')->name('teacher.scores.index');
+                    Route::post('my-subjects/{subject_id}/{section_id}/scores/save', 'TeacherScoreController@save')->name('teacher.scores.save');
+                    Route::post('my-subjects/{subject_id}/{section_id}/scores/submit', 'TeacherScoreController@submit')->name('teacher.scores.submit');
+                });
+
+                /*************** Exam Officer Workspace (Phase 2) *****************/
+                Route::group(['prefix' => 'exam-officer', 'middleware' => 'teamSAT'], function () {
+                    Route::get('/', 'ExamOfficerController@index')->name('exam_officer.dashboard');
+                    Route::get('submissions', 'ExamOfficerController@submissions')->name('exam_officer.submissions');
+                    Route::get('submissions/{submission_id}/review', 'ExamOfficerController@review')->name('exam_officer.review');
+                    Route::post('submissions/{submission_id}/approve', 'ExamOfficerController@approve')->name('exam_officer.approve');
+                    Route::post('submissions/{submission_id}/reject', 'ExamOfficerController@reject')->name('exam_officer.reject');
+                    Route::post('submissions/{submission_id}/toggle-lock', 'ExamOfficerController@toggle_lock')->name('exam_officer.toggle_lock');
+                    Route::get('missing-scores', 'ExamOfficerController@missing_scores')->name('exam_officer.missing_scores');
+                    Route::get('results-generation', 'ExamOfficerController@results_generation')->name('exam_officer.results_generation');
+                    Route::post('generate-results', 'ExamOfficerController@generate_results')->name('exam_officer.generate_results');
+                    Route::get('report-card/{student_id}/{exam_id}/{year?}', 'ExamOfficerController@report_card')->name('exam_officer.report_card');
+                    Route::get('bulk-report-cards', 'ExamOfficerController@bulk_report_cards')->name('exam_officer.bulk_report_cards');
+                });
+
+                /*************** Accountant Workspace (Phase 3) *****************/
+                Route::group(['prefix' => 'accountant', 'middleware' => 'teamAccount'], function () {
+                    Route::get('/', 'AccountantPortalController@dashboard')->name('accountant.dashboard');
+                    Route::get('students', 'AccountantPortalController@students')->name('accountant.students');
+                    Route::get('students/{student_id}/fees', 'AccountantPortalController@student_fees')->name('accountant.student_fees');
+                    Route::get('invoices', 'AccountantPortalController@invoices')->name('accountant.invoices');
+                    Route::post('invoices/store', 'AccountantPortalController@store_invoice')->name('accountant.store_invoice');
+                    Route::post('invoices/bill-class', 'AccountantPortalController@bill_class')->name('accountant.bill_class');
+                    Route::post('invoices/bill-student', 'AccountantPortalController@bill_student')->name('accountant.bill_student');
+                    Route::post('payments/{pr_id}/store', 'AccountantPortalController@store_payment')->name('accountant.store_payment');
+                    Route::get('receipts/{receipt_id}', 'AccountantPortalController@receipts')->name('accountant.receipts');
+                    Route::get('analytics', 'AccountantPortalController@analytics')->name('accountant.analytics');
+                    Route::get('sms-reminders', 'AccountantPortalController@sms_reminders')->name('accountant.sms_reminders');
+                    Route::post('sms-reminders/send', 'AccountantPortalController@send_bulk_sms')->name('accountant.send_bulk_sms');
+                });
+
                 /*************** Controller's resources **************/
                 Route::resource('students', 'StudentRecordController');
                 Route::resource('books', 'BookController');
@@ -311,6 +363,33 @@ Route::middleware([
                 Route::resource('users', 'UserController');
                 Route::resource('classes', 'MyClassController');
                 Route::resource('sections', 'SectionController');
+
+                /*************** Section: classroom-teacher permissions (spec §19) *****************/
+                Route::group(['prefix' => 'sections', 'middleware' => 'teamSA'], function () {
+                    // Tenant-wide default row — this is the page 90% of schools use.
+                    Route::get('classroom-permissions/defaults', 'SectionController@school_default_permissions')
+                        ->name('sections.school_defaults');
+                    Route::put('classroom-permissions/defaults', 'SectionController@update_school_default_permissions')
+                        ->name('sections.school_defaults.update');
+
+                    // Per-section override — the "Advanced" page.
+                    Route::get('{section}/classroom-permissions', 'SectionController@classroom_permissions')
+                        ->name('sections.classroom_permissions');
+                    Route::put('{section}/classroom-permissions', 'SectionController@update_classroom_permissions')
+                        ->name('sections.classroom_permissions.update');
+                });
+
+                /*************** School-wide default classroom rules (spec §19) *****************/
+                // The mass-market entry point: one page governs every section
+                // unless an admin drills in via Sections → edit → Advanced.
+                // Named under `sections.school_defaults.*` so they group with
+                // the rest of the section-scoped route namespace.
+                Route::group(['prefix' => 'sections/school-defaults', 'middleware' => 'teamSA'], function () {
+                    Route::get('/', 'SectionController@school_default_permissions')
+                        ->name('sections.school_defaults');
+                    Route::put('/', 'SectionController@update_school_default_permissions')
+                        ->name('sections.school_defaults.update');
+                });
                 Route::resource('subjects', 'SubjectController');
                 Route::resource('grades', 'GradeController');
                 Route::resource('exams', 'ExamController');

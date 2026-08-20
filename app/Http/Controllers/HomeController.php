@@ -75,6 +75,14 @@ class HomeController extends Controller
             $d['books_requests'] = $this->book->allRequests();
         }
 
+        if (Qs::userIsTeacher()) {
+            $user_id = auth()->id();
+            $d['my_sections'] = \App\Models\Section::where('teacher_id', $user_id)->with(['my_class.subjects'])->get();
+            $d['my_subject_records'] = \App\Models\SubjectRecord::where('teacher_id', $user_id)->with(['subject.my_class', 'section.my_class'])->get();
+            $d['is_class_teacher'] = $d['my_sections']->isNotEmpty();
+            $d['is_subject_teacher'] = $d['my_subject_records']->isNotEmpty();
+        }
+
         $notices = $this->notice->allExceptAuth()->sortBy("id", SORT_REGULAR, true);
         // Count all users who did not view notices - whose id not in viewers_ids.
         foreach ($notices as $ntc) {

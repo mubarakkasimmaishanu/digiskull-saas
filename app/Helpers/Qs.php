@@ -270,6 +270,18 @@ class Qs
         return auth()->user()->user_type == 'admin';
     }
 
+    public static function userIsExamOfficer(): bool
+    {
+        if (!auth()->check()) return false;
+        if (self::userIsTeamSA()) return true;
+
+        $staff = \App\Models\StaffRecord::where('user_id', auth()->id())->first();
+        if ($staff && in_array(strtolower((string)$staff->role), ['exam officer', 'examination officer', 'academic master', 'academic mistress', 'basa', 'dean'])) {
+            return true;
+        }
+        return false;
+    }
+
     public static function userIsLibrarian()
     {
         return auth()->user()->user_type == 'librarian';
@@ -293,6 +305,34 @@ class Qs
     public static function userIsClassSectionTeacher2($section_id)
     {
         return self::userIsTeacher() ? Section::where(["id" => $section_id, "teacher_id" => auth()->id()])->exists() : false;
+    }
+
+    /**
+     * Alias reading more naturally at call sites in teacher/CT code.
+     * Mirrors {@see userIsClassSectionTeacher2()} without changing its
+     * contract so nothing already relying on the older helper breaks.
+     */
+    public static function userIsClassTeacherOf($section_id): bool
+    {
+        return self::userIsClassSectionTeacher2($section_id);
+    }
+
+    /**
+     * Does the authenticated teacher own (subject, section)? Mirrors
+     * SubjectRecordPolicy@enterScore; exposed as a helper so views
+     * (`@if (Qs::userOwnsSubject($sub, $sec)) …`) can hide edit buttons
+     * without a controller round-trip. Controllers should still call
+     * `$this->authorize('enterScore', ...)` — this helper is view-only.
+     */
+    public static function userOwnsSubject($subject_id, $section_id): bool
+    {
+        if (! self::userIsTeacher()) return false;
+
+        return SubjectRecord::where([
+            'subject_id' => $subject_id,
+            'section_id' => $section_id,
+            'teacher_id' => auth()->id(),
+        ])->exists();
     }
 
     public static function getUserType()
@@ -849,7 +889,7 @@ class Qs
         };
     }
 
-    public static function getSelectedTableCols($columns = [], $name)
+    public static function getSelectedTableCols($columns = [], $name = '')
     {
         $data = self::getTableCols($name);
         // Flip the array to get the keys. The keys are the actual database column names
@@ -863,7 +903,7 @@ class Qs
         }
     }
 
-    public static function getPresentableTableCols($columns = [], $name): array
+    public static function getPresentableTableCols($columns = [], $name = ''): array
     {
         $data = self::getTableCols($name);
         // Flip the array to get the keys. The keys are the actual database column names

@@ -45,6 +45,33 @@
                         <button type="submit" class="btn btn-primary">Submit form <i class="material-symbols-rounded ml-2">send</i></button>
                     </div>
                 </form>
+
+                {{--
+                    Per-section classroom-teacher permission override is
+                    the rare-case escape hatch. The primary configuration
+                    surface is the school-wide page under School Rules;
+                    99% of admins should never open the block below.
+                --}}
+                <details class="mt-4">
+                    <summary class="text-muted" style="cursor: pointer;">
+                        <i class="material-symbols-rounded" style="vertical-align: middle;">tune</i>
+                        Advanced — override classroom-teacher rules for this section only
+                    </summary>
+                    <div class="p-3 border rounded mt-2" style="background: #f9f9f9;">
+                        <p class="text-muted small mb-2">
+                            The school-wide defaults live under
+                            <a href="{{ route('sections.school_defaults') }}">School Rules</a>
+                            and cover every section. Only open the override page below
+                            if this section genuinely needs different rules from the
+                            rest of the school.
+                        </p>
+                        <a href="{{ route('sections.classroom_permissions', $s->id) }}"
+                           class="btn btn-light btn-sm">
+                            <i class="material-symbols-rounded mr-1">tune</i>
+                            Open section override for {{ $s->my_class->name }} {{ $s->name }}
+                        </a>
+                    </div>
+                </details>
             </div>
         </div>
     </div>

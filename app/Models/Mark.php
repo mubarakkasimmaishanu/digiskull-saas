@@ -41,4 +41,29 @@ class Mark extends Eloquent
     {
         return $this->belongsTo(Grade::class);
     }
+
+    public function student_record()
+    {
+        return $this->hasOne(StudentRecord::class, 'user_id', 'student_id');
+    }
+
+    public function getCa1Attribute()
+    {
+        return $this->tex1;
+    }
+
+    public function getCa2Attribute()
+    {
+        return $this->tex2;
+    }
+
+    public function getExamScoreAttribute()
+    {
+        return $this->exm;
+    }
+
+    public function getTotalScoreAttribute()
+    {
+        return $this->cum;
+    }
 }

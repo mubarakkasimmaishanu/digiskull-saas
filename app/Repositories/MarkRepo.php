@@ -157,11 +157,11 @@ class MarkRepo
         return ($searched == false) ? null : ($searched + 1);
     }
 
-    public function getExtractedSumOf($weight, $offset = 0, $length)
+    public function getExtractedSumOf($weight, $offset = 0, $length = null)
     {
         sort($weight); // Sort points
         $weight = array_filter($weight);
-        if (count($weight) < $length) // If the points are not suffucient compared to subjects considered, return null
+        if ($length !== null && count($weight) < $length) // If the points are not sufficient compared to subjects considered, return null
             return null;
         // Start from offset (default 0). Take only the sum of the first considered points
         return array_sum(array_slice($weight, $offset, $length));

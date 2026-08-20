@@ -24,6 +24,12 @@
                     <li class="nav-item">
                         <a href="#school-info" class="nav-link" data-toggle="tab">School Info</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="#subjects-info" class="nav-link" data-toggle="tab">Inherited Subjects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#attendance-info" class="nav-link" data-toggle="tab">Attendance</a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -191,6 +197,81 @@
                                 @endif
                             </tbody>
                         </table>
+                    </div>
+
+                    {{--Inherited Subjects--}}
+                    <div class="tab-pane fade" id="subjects-info">
+                        <div class="alert alert-info border-0 mb-3">
+                            <i class="material-symbols-rounded align-middle mr-1">info</i>
+                            Subjects are configured at the <strong>Class Level ({{ $sr->my_class->name ?? 'Class' }})</strong>. This student automatically inherits all subjects offered by their class.
+                        </div>
+                        <table class="table table-bordered table-striped">
+                            <thead class="bg-slate-800 text-white">
+                                <tr>
+                                    <th style="width: 50px;">S/N</th>
+                                    <th>Subject Name</th>
+                                    <th>Short Code</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $class_subjects = $sr->my_class ? $sr->my_class->subjects()->orderBy('name')->get() : collect([]);
+                                @endphp
+                                @forelse($class_subjects as $sub)
+                                    <tr>
+                                        <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
+                                        <td class="font-weight-bold">{{ $sub->name }}</td>
+                                        <td><span class="badge badge-light font-weight-semibold">{{ $sub->slug }}</span></td>
+                                        <td>{{ $sub->core ? 'Core Subject' : 'Elective' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No subjects configured for this class yet.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {{--Attendance Info--}}
+                    <div class="tab-pane fade" id="attendance-info">
+                        @php
+                            $attRepo = app(\App\Repositories\AttendanceRepo::class);
+                            $attStats = $attRepo->getStudentAttendanceStats($sr->id);
+                        @endphp
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card card-body bg-light border text-center mb-2">
+                                    <h4 class="font-weight-bold text-primary mb-0">{{ $attStats['total_days'] }}</h4>
+                                    <span class="text-muted font-size-xs">Days School Opened</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card card-body bg-light border text-center mb-2">
+                                    <h4 class="font-weight-bold text-success mb-0">{{ $attStats['present_days'] }}</h4>
+                                    <span class="text-muted font-size-xs">Days Present</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card card-body bg-light border text-center mb-2">
+                                    <h4 class="font-weight-bold text-danger mb-0">{{ $attStats['absent_days'] }}</h4>
+                                    <span class="text-muted font-size-xs">Days Absent</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light border rounded mb-3">
+                            <div>
+                                <span class="font-weight-bold">Attendance Rate:</span>
+                                <span class="badge {{ $attStats['percentage'] >= 75 ? 'badge-success' : ($attStats['percentage'] >= 50 ? 'badge-warning' : 'badge-danger') }} font-size-sm ml-2">
+                                    {{ $attStats['percentage'] }}%
+                                </span>
+                            </div>
+                            <a href="{{ route('attendance.student_report', $sr->id) }}" class="btn btn-sm btn-primary">
+                                <i class="material-symbols-rounded font-size-sm mr-1">history</i> View Full Attendance Log
+                            </a>
+                        </div>
                     </div>
 
                 </div>

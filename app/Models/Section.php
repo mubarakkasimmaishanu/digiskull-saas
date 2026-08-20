@@ -23,4 +23,9 @@ class Section extends Eloquent
     {
         return $this->hasMany(StudentRecord::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'section_id');
+    }
 }
