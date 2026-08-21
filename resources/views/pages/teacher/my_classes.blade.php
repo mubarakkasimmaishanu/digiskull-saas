@@ -24,7 +24,7 @@
                 <div>
                     <strong>Class Teacher Role:</strong> You are assigned as the class teacher for the class(es) below.
                     Opening a class gives you access to the registered student roster, guardian information, and daily attendance register.
-                    <div class="mt-1 font-italic text-slate-700">
+                    <div class="mt-1 font-italic opacity-75">
                         * All subjects configured for your class are automatically inherited by the registered students.
                     </div>
                 </div>
@@ -40,22 +40,22 @@
                     <div class="card border shadow-sm rounded-lg">
                         <div class="card-header bg-slate-800 text-white d-flex justify-content-between align-items-center py-2">
                             <h6 class="font-weight-bold mb-0 text-white">
-                                {{ $data['class_name'] }} - Section {{ $data['section_name'] }}
+                                {{ $data['class_name'] }}
                             </h6>
                             <span class="badge badge-primary">Class Teacher</span>
                         </div>
 
                         <div class="card-body">
                             <ul class="list-group list-group-flush mb-3">
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                     <span><i class="material-symbols-rounded align-middle mr-1 font-size-sm text-muted">groups</i> Registered Students:</span>
-                                    <span class="badge badge-light badge-pill font-size-sm font-weight-bold">{{ $data['students_count'] }}</span>
+                                    <span class="badge badge-secondary badge-pill font-size-sm font-weight-bold">{{ $data['students_count'] }}</span>
                                 </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                     <span><i class="material-symbols-rounded align-middle mr-1 font-size-sm text-muted">menu_book</i> Inherited Subjects:</span>
-                                    <span class="badge badge-light badge-pill font-size-sm font-weight-bold">{{ $data['inherited_subjects_count'] }}</span>
+                                    <span class="badge badge-secondary badge-pill font-size-sm font-weight-bold">{{ $data['inherited_subjects_count'] }}</span>
                                 </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                     <span><i class="material-symbols-rounded align-middle mr-1 font-size-sm text-muted">calendar_today</i> Today's Register:</span>
                                     @if($data['attendance_marked_today'])
                                         <span class="badge badge-success px-2 py-1"><i class="material-symbols-rounded font-size-xs mr-1 align-middle">check</i> Marked</span>
@@ -63,9 +63,9 @@
                                         <span class="badge badge-warning px-2 py-1"><i class="material-symbols-rounded font-size-xs mr-1 align-middle">schedule</i> Pending</span>
                                     @endif
                                 </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                     <span><i class="material-symbols-rounded align-middle mr-1 font-size-sm text-muted">history</i> Total Days Recorded:</span>
-                                    <span class="font-weight-bold text-dark">{{ $data['total_school_days'] }}</span>
+                                    <span class="font-weight-bold">{{ $data['total_school_days'] }}</span>
                                 </li>
                             </ul>
 

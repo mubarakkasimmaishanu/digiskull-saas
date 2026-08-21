@@ -50,11 +50,12 @@ class TenantProvisionService
         }
 
         // Compute lifecycle dates upfront so all writes see the same clock.
-        $trialDays = $plan->trial_days ?: 14;
+        // 1 Term trial = 90 days. Termly cycle = 4 months (3 terms per year).
+        $trialDays = $plan->trial_days ?: 90;
         $startsAt = now();
         $endsAt = $isTrial
             ? now()->addDays($trialDays)
-            : ($billingInterval === 'yearly' ? now()->addYear() : now()->addMonth());
+            : ($billingInterval === 'yearly' ? now()->addYear() : now()->addMonths(4));
         $status = $isTrial ? 'trialing' : 'active';
 
         // Resolve the tenant domain hostname. Prefer explicit config (so we
@@ -95,9 +96,10 @@ class TenantProvisionService
                     'ends_at' => $endsAt,
                 ]);
 
-                $amount = $isTrial
-                    ? 0.00
-                    : ($billingInterval === 'yearly' ? $plan->yearly_price : $plan->monthly_price);
+                $planPrice = $billingInterval === 'yearly'
+                    ? $plan->yearly_price
+                    : ($plan->termly_price ?? $plan->monthly_price);
+                $amount = $isTrial ? 0.00 : $planPrice;
 
                 Invoice::create([
                     'tenant_id' => $tenant->id,

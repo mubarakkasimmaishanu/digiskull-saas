@@ -57,14 +57,15 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
 
         $session = '2026-2027';
 
+        $uid1 = uniqid();
         // 1. Setup Class, Section, Subject, Exam, and Configurable Grades
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
         $jss1 = MyClass::firstOrCreate(['name' => 'JSS 1'], ['class_type_id' => $ct->id]);
-        $sec = Section::create(['name' => 'S1_' . rand(100, 999), 'my_class_id' => $jss1->id]);
-        $math = Subject::create(['name' => 'Mathematics ' . rand(100, 999), 'my_class_id' => $jss1->id, 'slug' => 'MTH' . rand(10, 99), 'core' => 1]);
+        $sec = Section::create(['name' => 'S1_' . $uid1, 'my_class_id' => $jss1->id]);
+        $math = Subject::create(['name' => 'Mathematics ' . $uid1, 'my_class_id' => $jss1->id, 'slug' => 'MTH' . substr($uid1, 0, 4), 'core' => 1]);
 
         $exam = Exam::create([
-            'name' => 'First Term Examination ' . rand(100, 999),
+            'name' => 'First Term Examination ' . $uid1,
             'year' => $session,
             'term' => 1,
             'category_id' => 1,
@@ -81,13 +82,13 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
         // 2. Create Subject Teacher and assign to Mathematics
         $teacher = User::create([
             'name' => 'MR. OKECHUKWU MATH',
-            'username' => 'tmath_' . rand(100, 999),
-            'email' => 'tmath_' . rand(100, 999) . '@test.com',
+            'username' => 'tmath_' . $uid1,
+            'email' => 'tmath_' . $uid1 . '@test.com',
             'user_type' => 'teacher',
             'religion' => 'Christianity',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'TM' . rand(100, 999),
+            'code' => 'TM' . substr(md5($uid1), 0, 8),
         ]);
 
         SubjectRecord::create([
@@ -102,14 +103,14 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
         foreach ($names as $idx => $name) {
             $user = User::create([
                 'name' => $name,
-                'username' => 'ST/' . rand(1000, 9999),
-                'email' => 'st_' . rand(100, 999) . '@test.com',
+                'username' => 'ST/' . $uid1 . '_' . $idx,
+                'email' => 'st_' . $uid1 . '_' . $idx . '@test.com',
                 'user_type' => 'student',
                 'religion' => 'Islam',
                 'gender' => $idx === 1 ? 'Male' : 'Female',
                 'password' => Hash::make('password'),
                 'password_updated_at' => now(),
-                'code' => 'S' . rand(100, 999),
+                'code' => 'S' . substr(md5($uid1 . $idx), 0, 8),
             ]);
 
             $sr = StudentRecord::create([
@@ -270,16 +271,17 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
             'exam_student_position_by_value' => 'total',
         ]);
 
+        $uid3 = uniqid();
         $stUser = User::create([
             'name' => 'ZAINAB DANLADI',
-            'username' => 'ST/' . rand(1000, 9999),
-            'email' => 'zainab_' . rand(100, 999) . '@test.com',
+            'username' => 'ST/' . $uid3,
+            'email' => 'zainab_' . $uid3 . '@test.com',
             'user_type' => 'student',
             'religion' => 'Islam',
             'gender' => 'Female',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'STZ' . rand(100, 999),
+            'code' => 'STZ' . substr(md5($uid3), 0, 8),
         ]);
 
         $sr = StudentRecord::create([
@@ -443,28 +445,29 @@ class PhaseTwoAcademicAssessmentTest extends TestCase
         );
 
         // Class Teacher
+        $uid5 = uniqid();
         $classTeacher = User::create([
             'name' => 'CLASS TEACHER CT',
-            'username' => 'ct_' . rand(100, 999),
-            'email' => 'ct_' . rand(100, 999) . '@test.com',
+            'username' => 'ct_' . $uid5,
+            'email' => 'ct_' . $uid5 . '@test.com',
             'user_type' => 'teacher',
             'religion' => 'Islam',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'CT' . rand(100, 999),
+            'code' => 'CT' . substr(md5($uid5), 0, 8),
         ]);
         $sec->update(['teacher_id' => $classTeacher->id]);
 
         // Subject Teacher for Math
         $subjectTeacher = User::create([
             'name' => 'MATH SPECIALIST',
-            'username' => 'ms_' . rand(100, 999),
-            'email' => 'ms_' . rand(100, 999) . '@test.com',
+            'username' => 'ms_' . $uid5,
+            'email' => 'ms_' . $uid5 . '@test.com',
             'user_type' => 'teacher',
             'religion' => 'Christianity',
             'password' => Hash::make('password'),
             'password_updated_at' => now(),
-            'code' => 'MS' . rand(100, 999),
+            'code' => 'MS' . substr(md5($uid5 . 'ms'), 0, 8),
         ]);
 
         SubjectRecord::create([

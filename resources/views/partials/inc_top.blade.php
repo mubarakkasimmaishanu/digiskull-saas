@@ -1,3 +1,6 @@
+{{-- Favicons & Brand Icons --}}
+@include('partials.fav_icons')
+
 {{-- Fonts --}}
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap" rel="stylesheet">
 
@@ -9,6 +12,7 @@
 <link href="{{ asset('assets/css/layout-min.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ asset('assets/css/components-min.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ asset('assets/css/colors-min.css') }}" rel="stylesheet" type="text/css">
+<link href="{{ asset('assets/css/theme-dark-support.css') }}" rel="stylesheet" type="text/css">
 
 {{-- Core JS files --}}
 <script src="{{ asset('global_assets/js/main/jquery.min.js') }}"></script>

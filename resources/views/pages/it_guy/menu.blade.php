@@ -13,6 +13,11 @@
     <a href="{{ route('saas.admin.subscriptions') }}" class="nav-link {{ in_array(Route::currentRouteName(), ['saas.admin.subscriptions']) ? 'active' : '' }}"><i class="material-symbols-rounded">workspace_premium</i> <span>Subscriptions</span></a>
 </li>
 
+{{--Landing CMS Management--}}
+<li class="nav-item">
+    <a href="{{ route('saas.admin.landing_cms') }}" class="nav-link {{ in_array(Route::currentRouteName(), ['saas.admin.landing_cms']) ? 'active' : '' }}"><i class="material-symbols-rounded">dashboard_customize</i> <span>Landing CMS</span></a>
+</li>
+
 {{--Manage Settings--}}
 <li class="nav-item">
     <a href="{{ route('settings_non_tenancy.index') }}" class="nav-link {{ in_array(Route::currentRouteName(), ['settings_non_tenancy.index']) ? 'active' : '' }}"><i class="material-symbols-rounded">settings</i> <span>Settings</span></a>

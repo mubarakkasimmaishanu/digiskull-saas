@@ -39,8 +39,8 @@ class PhaseOneFoundationTest extends TestCase
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
 
         // 2. Create Classes: JSS 1, JSS 2
-        $jss1 = MyClass::create(['name' => 'JSS 1 ' . rand(100, 999), 'class_type_id' => $ct->id]);
-        $jss2 = MyClass::create(['name' => 'JSS 2 ' . rand(100, 999), 'class_type_id' => $ct->id]);
+        $jss1 = MyClass::create(['name' => 'JSS 1 ' . uniqid(), 'class_type_id' => $ct->id]);
+        $jss2 = MyClass::create(['name' => 'JSS 2 ' . uniqid(), 'class_type_id' => $ct->id]);
 
         $this->assertNotNull($jss1->id);
         $this->assertNotNull($jss2->id);
@@ -92,8 +92,8 @@ class PhaseOneFoundationTest extends TestCase
         }
 
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
-        $jss1 = MyClass::create(['name' => 'JSS 1 ' . rand(100, 999), 'class_type_id' => $ct->id]);
-        $jss2 = MyClass::create(['name' => 'JSS 2 ' . rand(100, 999), 'class_type_id' => $ct->id]);
+        $jss1 = MyClass::create(['name' => 'JSS 1 ' . uniqid(), 'class_type_id' => $ct->id]);
+        $jss2 = MyClass::create(['name' => 'JSS 2 ' . uniqid(), 'class_type_id' => $ct->id]);
 
         Subject::create(['name' => 'Mathematics', 'my_class_id' => $jss1->id, 'slug' => 'MTH-' . rand(100, 999), 'core' => 1]);
         Subject::create(['name' => 'English Studies', 'my_class_id' => $jss1->id, 'slug' => 'ENG-' . rand(100, 999), 'core' => 1]);
@@ -159,7 +159,7 @@ class PhaseOneFoundationTest extends TestCase
         }
 
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
-        $jss1 = MyClass::create(['name' => 'JSS 1 ' . rand(100, 999), 'class_type_id' => $ct->id]);
+        $jss1 = MyClass::create(['name' => 'JSS 1 ' . uniqid(), 'class_type_id' => $ct->id]);
         $section = Section::create(['name' => 'ATT_A_' . rand(100, 999), 'my_class_id' => $jss1->id]);
 
         $teacher = User::create([
@@ -233,8 +233,8 @@ class PhaseOneFoundationTest extends TestCase
         }
 
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
-        $jss1 = MyClass::create(['name' => 'JSS 1 ' . rand(100, 999), 'class_type_id' => $ct->id]);
-        $jss2 = MyClass::create(['name' => 'JSS 2 ' . rand(100, 999), 'class_type_id' => $ct->id]);
+        $jss1 = MyClass::create(['name' => 'JSS 1 ' . uniqid(), 'class_type_id' => $ct->id]);
+        $jss2 = MyClass::create(['name' => 'JSS 2 ' . uniqid(), 'class_type_id' => $ct->id]);
 
         $sec1 = Section::create(['name' => 'A', 'my_class_id' => $jss1->id]);
         $sec2 = Section::create(['name' => 'A', 'my_class_id' => $jss2->id]);
@@ -302,7 +302,7 @@ class PhaseOneFoundationTest extends TestCase
         }
 
         $ct = ClassType::firstOrCreate(['code' => 'J'], ['name' => 'Junior Secondary School', 'subjects_considered' => 9]);
-        $jss1 = MyClass::create(['name' => 'JSS 1 ' . rand(100, 999), 'class_type_id' => $ct->id]);
+        $jss1 = MyClass::create(['name' => 'JSS 1 ' . uniqid(), 'class_type_id' => $ct->id]);
         $sec = Section::create(['name' => 'A', 'my_class_id' => $jss1->id]);
 
         $teacher = User::create([

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Plan;
+use App\Services\LandingCmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -10,29 +11,34 @@ class SaaSController extends Controller
 {
     public function landing()
     {
+        $cms = LandingCmsService::getAll();
         $plans = Plan::where('active', true)->orderBy('sort_order')->get();
-        return view('saas.landing', compact('plans'));
+        return view('saas.landing', compact('plans', 'cms'));
     }
 
     public function pricing()
     {
+        $cms = LandingCmsService::getAll();
         $plans = Plan::where('active', true)->orderBy('sort_order')->get();
-        return view('saas.pricing', compact('plans'));
+        return view('saas.pricing', compact('plans', 'cms'));
     }
 
     public function features()
     {
-        return view('saas.features');
+        $cms = LandingCmsService::getAll();
+        return view('saas.features', compact('cms'));
     }
 
     public function contact()
     {
-        return view('saas.contact');
+        $cms = LandingCmsService::getAll();
+        return view('saas.contact', compact('cms'));
     }
 
     public function demoRequest()
     {
-        return view('saas.demo');
+        $cms = LandingCmsService::getAll();
+        return view('saas.demo', compact('cms'));
     }
 
     public function storeDemoRequest(Request $request)
@@ -46,8 +52,6 @@ class SaaSController extends Controller
             'message' => 'nullable|string',
         ]);
 
-        // In a real application, you'd send an email or store this in a demo_requests table.
-        // We'll log it or fire an event.
         \Illuminate\Support\Facades\Log::info('Demo Request Submitted:', $request->all());
 
         return back()->with('pop_success', 'Thank you! Your demo request has been submitted. Our team will contact you shortly.');

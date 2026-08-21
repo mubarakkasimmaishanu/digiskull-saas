@@ -1,23 +1,30 @@
-<div class="navbar navbar-expand-lg login">
-    <span class="navbar-text d-flex">
-        <span class="text-color-custom">&copy; {{ date('Y') }}, &nbsp</span>
-        <a href="#" class="text-color-custom">
-            <span class="d-none d-md-block">{{ config('app.name') }}.</span>
-            <span class="d-block d-md-none">{{ Qs::getStringAbbreviation(config('app.name')) }}</span>
-        </a>
+<div class="navbar navbar-expand-lg login py-2 px-3 px-md-4 d-flex justify-content-between align-items-center flex-wrap flex-shrink-0" style="min-height: 44px;">
+    <span class="navbar-text d-flex align-items-center text-muted font-size-xs mb-0">
+        <span>&copy; {{ date('Y') }} Digiskul. All rights reserved.</span>
     </span>
 
-    <ul class="navbar-nav ml-lg-auto">
-        <li class="nav-item"><a href="{{ route('privacy_policy') }}" class="navbar-nav-link text-color-custom" target="_blank"><i class="material-symbols-rounded mr-2">policy</i><span class="d-none d-md-block">{{ 'Privacy Policy' }} </span></a></li>
-        <li class="nav-item"><a href="{{ route('terms_of_use') }}" class="navbar-nav-link text-color-custom" target="_blank"><i class="material-symbols-rounded mr-2">gavel</i><span class="d-none d-md-block">{{ 'Terms of Use' }} </span></a></li>
-        <li class="nav-item"><a class="navbar-nav-link text-color-custom" id="contact-link" data-toggle="modal" data-target="#admin-contact-modal"><i class="material-symbols-rounded mr-2">call</i> <span class="d-none d-md-block"> {{ 'Contact Admin' }} </span></a></li>
+    <ul class="navbar-nav ml-auto d-flex flex-row align-items-center mb-0">
+        <li class="nav-item mr-3">
+            <a href="{{ route('privacy_policy') }}" class="text-muted hover-light font-size-xs d-flex align-items-center" target="_blank">
+                <i class="material-symbols-rounded mr-1 font-size-xs">policy</i> <span>Privacy Policy</span>
+            </a>
+        </li>
+        <li class="nav-item mr-3">
+            <a href="{{ route('terms_of_use') }}" class="text-muted hover-light font-size-xs d-flex align-items-center" target="_blank">
+                <i class="material-symbols-rounded mr-1 font-size-xs">gavel</i> <span>Terms of Use</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="text-muted hover-light font-size-xs d-flex align-items-center cursor-pointer" id="contact-link" data-toggle="modal" data-target="#admin-contact-modal" style="cursor: pointer;">
+                <i class="material-symbols-rounded mr-1 font-size-xs">support_agent</i> <span>Contact Support</span>
+            </a>
+        </li>
     </ul>
 </div>
 
-<script type="text/javascript">
-        $("#exam-announce").marquee({
-            direction: 'left', 
-            pauseOnHover: true, 
-            speed: 100
-        });
-</script>
+<style>
+    .hover-light:hover {
+        color: #38bdf8 !important;
+        text-decoration: none;
+    }
+</style>

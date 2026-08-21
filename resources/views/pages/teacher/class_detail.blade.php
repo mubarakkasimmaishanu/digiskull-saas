@@ -164,8 +164,8 @@
                                 @endphp
                                 <tr>
                                     <td class="text-center font-weight-bold">{{ $loop->iteration }}</td>
-                                    <td class="font-weight-bold text-dark">{{ $sub->name }}</td>
-                                    <td><span class="badge badge-light font-weight-semibold">{{ $sub->slug }}</span></td>
+                                    <td class="font-weight-bold">{{ $sub->name }}</td>
+                                    <td><span class="badge badge-secondary font-weight-semibold">{{ $sub->slug }}</span></td>
                                     <td>
                                         @if($sub->core)
                                             <span class="badge badge-primary">Core Subject</span>
@@ -175,12 +175,12 @@
                                     </td>
                                     <td>
                                         @forelse($sub_recs as $rec)
-                                            <span class="badge badge-light border p-1 mr-1">
+                                            <span class="badge badge-secondary border p-1 mr-1">
                                                 <i class="material-symbols-rounded font-size-xs align-middle mr-1">person</i>
                                                 {{ $rec->teacher->name ?? 'Unassigned' }}
                                             </span>
                                         @empty
-                                            <span class="text-muted font-italic font-size-sm">No teacher assigned for this section</span>
+                                            <span class="text-muted font-italic font-size-sm">No teacher assigned</span>
                                         @endforelse
                                     </td>
                                 </tr>

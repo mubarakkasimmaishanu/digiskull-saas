@@ -48,19 +48,19 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     <span class="text-muted font-size-sm font-weight-bold">Assigned Class Tier:</span>
-                                    <span class="badge badge-light border ml-1">{{ $group['class_name'] }}</span>
+                                    <span class="badge badge-secondary ml-1">{{ $group['class_name'] }}</span>
                                 </div>
 
                                 <h6 class="font-weight-semibold text-primary mt-3 mb-2 font-size-sm border-bottom pb-1">
-                                    <i class="material-symbols-rounded font-size-xs align-middle mr-1">meeting_room</i>
-                                    Assigned Sections:
+                                    <i class="material-symbols-rounded font-size-xs align-middle mr-1">school</i>
+                                    Assigned Class:
                                 </h6>
 
                                 <div class="list-group list-group-flush mb-3">
                                     @foreach($group['assignments'] as $assign)
-                                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                        <div class="list-group-item bg-transparent px-0 py-2 d-flex justify-content-between align-items-center">
                                             <div>
-                                                <strong>{{ $assign['class_name'] }} - {{ $assign['section_name'] }}</strong>
+                                                <strong class="font-size-sm">{{ $assign['class_name'] }}</strong>
                                                 <div class="text-muted font-size-xs">
                                                     {{ $assign['students_count'] }} Students (Class Membership)
                                                 </div>
@@ -70,7 +70,7 @@
                                                     <i class="material-symbols-rounded font-size-sm mr-1">visibility</i> View Students
                                                 </a>
                                             @else
-                                                <span class="badge badge-secondary">All Sections</span>
+                                                <span class="badge badge-secondary">All Classes</span>
                                             @endif
                                         </div>
                                     @endforeach

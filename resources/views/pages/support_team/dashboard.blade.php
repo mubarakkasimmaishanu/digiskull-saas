@@ -358,6 +358,7 @@ $staff = $users->where('user_type', '<>', 'student')->where('user_type', '<>', '
             </div>
         </div>
     </div>
+    @endif
 </div>
 @endif
 

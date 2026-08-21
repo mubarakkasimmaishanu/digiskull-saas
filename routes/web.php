@@ -28,6 +28,7 @@ Route::post('/demo', [App\Http\Controllers\SaaSController::class, 'storeDemoRequ
 // Onboarding wizard
 Route::prefix('onboard')->group(function () {
     Route::get('/', [App\Http\Controllers\OnboardingController::class, 'wizard'])->name('onboard.wizard');
+    Route::get('/check-subdomain', [App\Http\Controllers\OnboardingController::class, 'checkSubdomain'])->name('onboard.check_subdomain');
     Route::post('/register', [App\Http\Controllers\OnboardingController::class, 'register'])->name('onboard.register');
     Route::get('/payment/{tenant_hash}', [App\Http\Controllers\OnboardingController::class, 'paymentPage'])->name('onboard.payment');
     Route::post('/process-trial/{tenant_hash}', [App\Http\Controllers\OnboardingController::class, 'processTrial'])->name('onboard.process_trial');
@@ -146,6 +147,17 @@ Route::group(['middleware' => ['auth', 'checkForPassUpdate', 'itGuy', 'handleCoo
                 Route::post('subscriptions/{tenant_id}/activate', 'SaaSAdminController@activateTenant')->name('saas.admin.activate');
                 Route::post('subscriptions/{tenant_id}/upgrade', 'SaaSAdminController@upgradePlan')->name('saas.admin.upgrade');
                 Route::post('subscriptions/{tenant_id}/extend', 'SaaSAdminController@extendSubscription')->name('saas.admin.extend');
+
+                // Dynamic Landing Page CMS Management
+                Route::get('landing-cms', 'LandingCmsController@index')->name('saas.admin.landing_cms');
+                Route::post('landing-cms/hero', 'LandingCmsController@updateHero')->name('saas.admin.landing_cms.hero');
+                Route::post('landing-cms/features', 'LandingCmsController@updateFeatures')->name('saas.admin.landing_cms.features');
+                Route::post('landing-cms/comparison', 'LandingCmsController@updateComparison')->name('saas.admin.landing_cms.comparison');
+                Route::post('landing-cms/testimonials', 'LandingCmsController@updateTestimonials')->name('saas.admin.landing_cms.testimonials');
+                Route::post('landing-cms/faqs', 'LandingCmsController@updateFaqs')->name('saas.admin.landing_cms.faqs');
+                Route::post('landing-cms/contact', 'LandingCmsController@updateContact')->name('saas.admin.landing_cms.contact');
+                Route::post('landing-cms/plan/{plan_id}', 'LandingCmsController@updatePlan')->name('saas.admin.landing_cms.plan');
+                Route::post('landing-cms/reset', 'LandingCmsController@resetDefaults')->name('saas.admin.landing_cms.reset');
             });
 
             /*************** Controller's resources **************/

@@ -1,108 +1,98 @@
 @extends('layouts.login_master')
 
-@section('page_title', 'Login')
+@section('page_title', 'Account Login')
 
 @section('content')
 
-<div class="page-content login-cover">
-    <!-- Main content -->
-    <div class="content-wrapper">
-        <!-- Content area -->
-        <div class="content d-flex justify-content-center">
-            <div class="row align-items-center">
-
-                {{-- <div class="col-md-7">
-                    <div class="introductory-section">
-                        <div class="card intro border-0">
-                            <div class="card-body">
-                                <h4 class="card-title"><strong class="text-info">Peace Be Upon You, Welcome.</strong></h4>
-                                <div class="card-text">
-                                    <p>
-                                        {{ ("School Maanagement System (SMS) deals with information related to the school
-                                        in general such as; teachers information, parents information,
-                                        students information, students accommodation status,
-                                        students academic records, fees payments records and
-                                        other related informations.") }}
-                                    </p>
-
-                                    <h5><strong class="text-info">{{ ("Authorized Users can,") }}</strong></h5>
-                                    <ul class="pl-3">
-                                        <li>{{ ("Publish Exam Results.") }}</li>
-                                        <li>{{ ("Manage Classes, Subjects, Examinations, Payments, Books, Announcements etc...") }}</li>
-                                        <li>{{ ("View respective Informations.") }}</li>
-                                        <li>{{ ("Create, View, Delete, and Edit records.") }}</li>
-                                        <li>{{ ("Generate Reports.") }}</li>
-                                        <li>{{ ("Among others...") }}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+<div class="page-content login-cover w-100">
+    <div class="w-100" style="max-width: 580px; position: relative; z-index: 1;">
+        
+        <!-- Login card -->
+        <form class="login-form" method="post" action="{{ route('login') }}">
+            @csrf
+            <div class="glass-card-login p-4 px-md-5 py-md-4">
+                
+                <div class="text-center mb-3">
+                    <div class="rounded-circle d-inline-flex p-2 mb-2" style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.3);">
+                        <span class="material-symbols-rounded text-info" style="font-size: 26px;">lock</span>
                     </div>
-                </div> --}}
-
-                <!-- Login card -->
-                <div class="col-md-5">
-                    <form class="login-form" method="post" action="{{ route('login') }}">
-                        @csrf
-                        <div class="card mb-0">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <span class="material-symbols-rounded symbol-2x text-warning-400 border-warning-400 border-3 rounded-round p-3 mb-3 mt-1">security</span>
-                                    <h5 class="mb-0 text-info">Login to your account</h5>
-                                    <span class="d-block text-muted">Your credentials</span>
-                                </div>
-
-                                @if ($errors->any())
-                                <div class="alert alert-danger alert-styled-left alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                                    <i>Oops! {{ implode('<br>', $errors->all()) }}</i>
-                                </div>
-                                @endif
-
-                                {{-- Look for login controller for more --}}
-                                @if (session("session_expired") && $errors->isEmpty())
-                                <div class="alert alert-danger alert-styled-left alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                                    <i>{{ session("session_expired") }}</i>
-                                </div>
-                                @endif
-
-                                {{-- Error message for a blocked user --}}
-                                @if (Session::has("access_denied"))
-                                <div class="alert alert-warning alert-styled-left alert-dismissible">
-                                    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-                                    <i>{{ session("access_denied") }}</i>
-                                </div>
-                                @endif
-
-                                <div class="form-group ">
-                                    <input type="text" class="form-control" name="identity" value="{{ old('identity') }}" placeholder="Login ID or Email" autocomplete="identity">
-                                </div>
-
-                                <div class="form-group ">
-                                    <input required name="password" type="password" class="form-control" placeholder="{{ __('Password') }}" autocomplete="password">
-                                </div>
-
-                                <div class="form-group d-flex align-items-center">
-                                    <div class="form-check mb-0">
-                                        <label class="form-check-label">
-                                            <input type="checkbox" name="remember" class="form-input-styled" @checked(old('remember')) data-fouc>
-                                            <span class="text-info">Remember Me</span>
-                                        </label>
-                                    </div>
-                                    <a href="{{ route('password.request') }}" class="ml-auto">Forgot password?</a>
-                                </div>
-
-                                <div class="form-group">
-                                    <button type="submit" class="btn bg-blue w-100 d-flex"><i class="material-symbols-rounded ml-auto mr-1">login</i> <span class="mr-auto">Sign in</span></button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                    <h4 class="text-white font-weight-bold mb-1">Welcome Back</h4>
+                    <p class="text-muted font-size-xs mb-0">Enter your credentials to access your school portal</p>
                 </div>
+
+                {{-- Alerts --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-styled-left alert-dismissible bg-danger-alpha text-white border-0 py-1 px-3 font-size-xs mb-2">
+                        <button type="button" class="close text-white" data-dismiss="alert"><span>&times;</span></button>
+                        <span>{!! implode('<br>', $errors->all()) !!}</span>
+                    </div>
+                @endif
+
+                @if (session("session_expired") && $errors->isEmpty())
+                    <div class="alert alert-warning alert-styled-left alert-dismissible bg-warning-alpha text-white border-0 py-1 px-3 font-size-xs mb-2">
+                        <button type="button" class="close text-white" data-dismiss="alert"><span>&times;</span></button>
+                        <span>{{ session("session_expired") }}</span>
+                    </div>
+                @endif
+
+                @if (Session::has("access_denied"))
+                    <div class="alert alert-danger alert-styled-left alert-dismissible bg-danger-alpha text-white border-0 py-1 px-3 font-size-xs mb-2">
+                        <button type="button" class="close text-white" data-dismiss="alert"><span>&times;</span></button>
+                        <span>{{ session("access_denied") }}</span>
+                    </div>
+                @endif
+
+                {{-- Identity / Username Input --}}
+                <div class="form-group mb-3">
+                    <label class="text-light font-weight-semibold font-size-xs mb-1">Username / Email / ID</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-dark border-secondary text-muted py-1" style="border-color: rgba(255, 255, 255, 0.12) !important;">
+                                <i class="material-symbols-rounded font-size-sm">person</i>
+                            </span>
+                        </div>
+                        <input type="text" class="form-control bg-dark text-white font-size-sm border-secondary py-2" style="border-color: rgba(255, 255, 255, 0.12) !important; height: auto;" name="identity" value="{{ old('identity') }}" placeholder="e.g. teacher1 or user@school.ng" autocomplete="identity" required autofocus>
+                    </div>
+                </div>
+
+                {{-- Password Input --}}
+                <div class="form-group mb-3">
+                    <label class="text-light font-weight-semibold font-size-xs mb-1">Password</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text bg-dark border-secondary text-muted py-1" style="border-color: rgba(255, 255, 255, 0.12) !important;">
+                                <i class="material-symbols-rounded font-size-sm">key</i>
+                            </span>
+                        </div>
+                        <input type="password" class="form-control bg-dark text-white font-size-sm border-secondary py-2" style="border-color: rgba(255, 255, 255, 0.12) !important; height: auto;" required name="password" placeholder="Enter password" autocomplete="current-password">
+                    </div>
+                </div>
+
+                {{-- Remember Me & Forgot Password --}}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="rememberMeCheck" name="remember" @checked(old('remember'))>
+                        <label class="custom-control-label text-muted font-size-xs" for="rememberMeCheck">Remember me</label>
+                    </div>
+                    <a href="{{ route('password.request') }}" class="text-info font-size-xs hover-underline">Forgot password?</a>
+                </div>
+
+                {{-- Submit Button --}}
+                <button type="submit" class="btn btn-gradient-primary btn-block py-2 rounded-pill font-weight-bold shadow-lg d-flex justify-content-center align-items-center">
+                    <span>Sign in to Portal</span>
+                    <i class="material-symbols-rounded ml-2 font-size-sm">arrow_forward</i>
+                </button>
             </div>
-        </div>
+        </form>
+
     </div>
 </div>
+
+<style>
+    .hover-underline:hover {
+        text-decoration: underline !important;
+        color: #38bdf8 !important;
+    }
+</style>
 
 @endsection

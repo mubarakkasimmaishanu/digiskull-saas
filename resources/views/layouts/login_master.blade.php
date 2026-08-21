@@ -32,14 +32,14 @@
         </script>
     @endif
 
-    <title>{{ Qs::getStringAbbreviation(config('app.name')) }} &#183; @yield('page_title')</title>
+    <title>Digiskul &#183; @yield('page_title')</title>
 
     @laravelPWA
 
     @include('partials.login.inc_top')
 </head>
 
-<body>
+<body class="login-layout-body">
     @include('partials.login.header')
     @include('partials.login.exam_announce')
     @include('pages.modals.admin')

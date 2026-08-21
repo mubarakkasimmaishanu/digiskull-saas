@@ -46,9 +46,11 @@ class OnboardingController extends Controller
     public function wizard(Request $request)
     {
         $plans = Plan::where('active', true)->orderBy('sort_order')->get();
-        $selectedPlan = $request->query('plan');
+        $selectedPlan = $request->query('plan', 'standard');
+        $initialSubdomain = $request->query('subdomain');
+        $billingCycle = $request->query('cycle', 'termly');
 
-        return view('saas.onboard_wizard', compact('plans', 'selectedPlan'));
+        return view('saas.onboard_wizard', compact('plans', 'selectedPlan', 'initialSubdomain', 'billingCycle'));
     }
 
     public function register(Request $request)
@@ -61,8 +63,8 @@ class OnboardingController extends Controller
             'owner_name' => 'required|string|max:255',
             'owner_email' => 'required|email|max:255',
             'owner_password' => 'required|string|min:8',
-            'billing_interval' => 'required|in:monthly,yearly',
-            'payment_method' => 'required|in:trial,national,international',
+            'billing_interval' => 'required|in:termly,yearly,monthly',
+            'payment_method' => 'required|string',
         ]);
 
         $subdomain = strtolower($request->subdomain);
@@ -76,14 +78,21 @@ class OnboardingController extends Controller
 
         $plan = Plan::where('slug', $request->plan_slug)->firstOrFail();
 
-        // Hash the owner password IMMEDIATELY on capture. It's never stored
-        // plaintext — not in pending_registrations, not in logs, not in
-        // downstream service calls. The provisioner accepts a pre-hashed
-        // value and inserts it verbatim.
+        // Normalise monthly to termly
+        $billingInterval = $request->billing_interval === 'monthly' ? 'termly' : $request->billing_interval;
+
+        // Hash the owner password IMMEDIATELY on capture. It's never stored plaintext.
         $hashedPassword = Hash::make($request->owner_password);
 
-        if ($request->payment_method === 'trial') {
-            // Provision 14-day trial immediately
+        $isTrialMethod = in_array($request->payment_method, ['trial', 'trial_card', 'national', 'international']);
+
+        if ($isTrialMethod) {
+            // Payment auth token (last 4 digits / simulation token for automated billing)
+            $cardNumber = preg_replace('/\D/', '', $request->input('card_number', ''));
+            $last4 = strlen($cardNumber) >= 4 ? substr($cardNumber, -4) : '4242';
+            $authRef = 'AUTH-TRM-' . strtoupper(uniqid()) . '-L4' . $last4;
+
+            // Provision 1-Term Free Trial (90 days) immediately
             $tenant = $this->provisionService->provision(
                 $plan,
                 $subdomain,
@@ -92,29 +101,32 @@ class OnboardingController extends Controller
                 $request->owner_name,
                 $request->owner_email,
                 $hashedPassword,
-                $request->billing_interval,
-                true // isTrial
+                $billingInterval,
+                true, // isTrial = 1 Full Term Free (90 days)
+                $authRef
             );
 
             // Redirect to success page with hashed tenant ID
             $hashedId = Qs::hash($tenant->id);
             return redirect()->route('onboard.success', ['tenant_hash' => $hashedId])
-                             ->with('pop_success', 'School tenant provisioned successfully!');
+                             ->with('pop_success', '1-Term Free Trial activated! School portal provisioned successfully.');
         } else {
-            // Paid onboarding: Create pending registration
-            $reference = 'EDUOS-' . strtoupper(uniqid());
-            $amount = $request->billing_interval === 'yearly' ? $plan->yearly_price : $plan->monthly_price;
+            // Direct paid billing checkout: Create pending registration
+            $reference = 'DIGI-' . strtoupper(uniqid());
+            $amount = $billingInterval === 'yearly' 
+                ? $plan->yearly_price 
+                : ($plan->termly_price ?? $plan->monthly_price);
 
             $pending = PendingRegistration::create([
                 'reference' => $reference,
                 'plan_id' => $plan->id,
-                'billing_interval' => $request->billing_interval,
+                'billing_interval' => $billingInterval,
                 'subdomain' => $subdomain,
                 'school_name' => $request->school_name,
                 'school_email' => $request->school_email,
                 'owner_name' => $request->owner_name,
                 'owner_email' => $request->owner_email,
-                'owner_password' => $hashedPassword, // Bcrypt hash, never the plaintext.
+                'owner_password' => $hashedPassword,
                 'amount' => $amount,
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
@@ -137,7 +149,7 @@ class OnboardingController extends Controller
         $pendingId = Qs::decodeHash($tenant_hash);
         $pending = PendingRegistration::with('plan')->findOrFail($pendingId);
 
-        // Provision trial using the details from pending registration
+        // Provision 1-term trial using details from pending registration
         $tenant = $this->provisionService->provision(
             $pending->plan,
             $pending->subdomain,
@@ -146,8 +158,8 @@ class OnboardingController extends Controller
             $pending->owner_name,
             $pending->owner_email,
             $pending->owner_password,
-            $pending->billing_interval,
-            true // isTrial = true
+            $pending->billing_interval ?: 'termly',
+            true // isTrial = 1 Full Term Free
         );
 
         // Delete pending registration after successful conversion to trial
@@ -156,7 +168,7 @@ class OnboardingController extends Controller
         // Redirect to success page with hashed tenant ID
         $hashedId = Qs::hash($tenant->id);
         return redirect()->route('onboard.success', ['tenant_hash' => $hashedId])
-                         ->with('pop_success', 'School trial plan started successfully!');
+                         ->with('pop_success', '1-Term Free Trial started successfully!');
     }
 
     public function successPage($tenant_hash)

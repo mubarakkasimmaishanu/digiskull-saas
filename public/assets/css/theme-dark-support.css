@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Digiskul Dark Theme Compatibility & Contrast Enhancements
+   Ensures seamless visibility for text, cards, list groups, badges, & tables
+   ========================================================================== */
+
+/* 1. Global Dark Theme List Group & Card Adaptations */
+[data-theme="dark"] .list-group-item {
+    background-color: transparent !important;
+    color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .list-group-item strong,
+[data-theme="dark"] .list-group-item b {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .list-group-item span:not(.badge),
+[data-theme="dark"] .list-group-item div {
+    color: inherit;
+}
+
+/* 2. Bg-white & Bg-light overrides for Dark Mode */
+[data-theme="dark"] .bg-white {
+    background-color: #1e252b !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .bg-light {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .card-header.bg-white,
+[data-theme="dark"] .card-footer.bg-white {
+    background-color: #1e252b !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .card-header.bg-light,
+[data-theme="dark"] .card-footer.bg-light {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .card.border {
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* 3. Text contrast overrides */
+[data-theme="dark"] .text-dark {
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: #94a3b8 !important;
+}
+
+[data-theme="dark"] .text-slate-700,
+[data-theme="dark"] .text-slate-800 {
+    color: #cbd5e1 !important;
+}
+
+/* 4. Badges in Dark Mode */
+[data-theme="dark"] .badge-light {
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-theme="dark"] .badge-pill {
+    font-weight: 600;
+}
+
+/* 5. Alerts in Dark Mode */
+[data-theme="dark"] .alert-info {
+    background-color: rgba(0, 188, 212, 0.12) !important;
+    border: 1px solid rgba(0, 188, 212, 0.25) !important;
+    color: #67e8f9 !important;
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: rgba(255, 152, 0, 0.12) !important;
+    border: 1px solid rgba(255, 152, 0, 0.25) !important;
+    color: #fdba74 !important;
+}
+
+[data-theme="dark"] .alert-danger {
+    background-color: rgba(244, 67, 54, 0.12) !important;
+    border: 1px solid rgba(244, 67, 54, 0.25) !important;
+    color: #fca5a5 !important;
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: rgba(76, 175, 80, 0.12) !important;
+    border: 1px solid rgba(76, 175, 80, 0.25) !important;
+    color: #86efac !important;
+}
+
+/* 6. Form Controls in Dark Mode */
+[data-theme="dark"] .form-control {
+    background-color: #181d22 !important;
+    color: #f8fafc !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25) !important;
+}
+
+[data-theme="dark"] .form-control:disabled,
+[data-theme="dark"] .form-control[readonly] {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #94a3b8 !important;
+}
+
+/* 7. Tables in Dark Mode */
+[data-theme="dark"] .table {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .table thead th {
+    border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+[data-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 8. Tabs in Dark Mode */
+[data-theme="dark"] .nav-tabs {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .nav-tabs .nav-link:hover {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .nav-tabs-highlight .nav-link.active {
+    background-color: #1e252b !important;
+    color: #38bdf8 !important;
+    border-top-color: #38bdf8 !important;
+}

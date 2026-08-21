@@ -7,10 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Plan extends Model
 {
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'name',
         'slug',
         'monthly_price',
+        'termly_price',
         'yearly_price',
         'trial_days',
         'max_students',
@@ -25,7 +28,9 @@ class Plan extends Model
         'features' => 'array',
         'active' => 'boolean',
         'monthly_price' => 'float',
+        'termly_price' => 'float',
         'yearly_price' => 'float',
+        'trial_days' => 'integer',
     ];
 
     public function subscriptions(): HasMany

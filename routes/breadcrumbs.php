@@ -19,6 +19,11 @@ Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
     $trail->push('Dashboard', route('dashboard'));
 });
 
+Breadcrumbs::for('errors.404', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Page Not Found');
+});
+
 // 2fa (two factor authentication (google)) 
 Breadcrumbs::for('account_security.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
@@ -672,5 +677,17 @@ Breadcrumbs::for('accountant.receipts', function (BreadcrumbTrail $trail, $recei
     $trail->parent('accountant.dashboard');
     $trail->push('Payment Receipt #' . $receipt_id, route('accountant.receipts', $receipt_id));
 });
+
+// SaaS Admin & Landing CMS
+Breadcrumbs::for('saas.admin.subscriptions', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('SaaS Subscriptions', route('saas.admin.subscriptions'));
+});
+
+Breadcrumbs::for('saas.admin.landing_cms', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Landing Page CMS Management', route('saas.admin.landing_cms'));
+});
+
 
 

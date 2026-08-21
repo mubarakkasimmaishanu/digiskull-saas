@@ -3,44 +3,46 @@
 @section('page_title', 'Complete Payment')
 
 @section('content')
-<div class="container my-5">
+<div class="container my-5 py-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card bg-dark border-secondary">
-                <div class="card-header border-secondary bg-transparent text-center">
-                    <h3 class="card-title text-white font-weight-bold">Pay to Register School</h3>
-                    <p class="text-muted mb-0">Invoice Reference: <strong>{{ $pending->reference }}</strong></p>
+        <div class="col-md-7 col-lg-6">
+            <div class="glass-card p-4 p-md-5 shadow-2xl">
+                <div class="text-center mb-4">
+                    <span class="badge badge-pill badge-info px-3 py-1 mb-2 font-weight-bold">SECURE CHECKOUT</span>
+                    <h3 class="text-white font-weight-bold">Activate School Subscription</h3>
+                    <p class="text-muted mb-0">Invoice Reference: <code>{{ $pending->reference }}</code></p>
                 </div>
-                <div class="card-body p-4 text-center">
-                    <h4 class="text-muted mb-2">School Name: <strong>{{ $pending->school_name }}</strong></h4>
-                    <p class="text-muted">Subscription Plan: <strong>{{ $pending->plan->name }} ({{ ucfirst($pending->billing_interval) }})</strong></p>
+
+                <div class="text-center">
+                    <h5 class="text-white font-weight-bold mb-1">{{ $pending->school_name }}</h5>
+                    <p class="text-muted font-size-sm">Selected Tier: <strong class="text-info">{{ $pending->plan->name }} ({{ ucfirst($pending->billing_interval) }})</strong></p>
                     
-                    <div class="my-4 p-3 bg-secondary rounded">
+                    <div class="my-4 p-3 rounded-3" style="background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3);">
                         <span class="h2 text-white font-weight-bold">&#8358;{{ number_format($pending->amount, 2) }}</span>
                     </div>
 
                     <!-- Payment Route Selection -->
                     <div class="my-4 text-center">
                         @if ($pending->payment_method === 'national')
-                            <span class="badge badge-success mb-2 p-2" style="font-size: 0.9rem;">National Checkout</span>
-                            <p class="text-muted">Routes through <strong>Paystack</strong> (Nigerian Cards, Bank, USSD)</p>
+                            <span class="badge badge-success mb-2 px-3 py-1" style="font-size: 0.9rem;">National Payment</span>
+                            <p class="text-muted font-size-sm">Routes through <strong>Paystack</strong> (Nigerian Cards, Bank Transfer, USSD)</p>
                             <input type="hidden" name="gateway" id="gateway_input" value="paystack">
                         @else
-                            <span class="badge badge-info mb-2 p-2" style="font-size: 0.9rem;">International Checkout</span>
-                            <p class="text-muted">Routes through <strong>Flutterwave</strong> (Global USD Card / Multi-currency)</p>
+                            <span class="badge badge-info mb-2 px-3 py-1" style="font-size: 0.9rem;">International Payment</span>
+                            <p class="text-muted font-size-sm">Routes through <strong>Flutterwave</strong> (Global USD &amp; Multi-currency Cards)</p>
                             <input type="hidden" name="gateway" id="gateway_input" value="flutterwave">
                         @endif
                     </div>
 
-                    <button type="button" class="btn btn-success btn-lg btn-block mt-4" id="btn-pay" onclick="payNow()">
-                        <span class="material-symbols-rounded align-middle mr-1">credit_card</span> Pay Now
+                    <button type="button" class="btn btn-gradient-primary btn-lg btn-block py-3 rounded-pill font-weight-bold shadow-lg mt-4" id="btn-pay" onclick="payNow()">
+                        <i class="material-symbols-rounded align-middle mr-1">credit_card</i> Complete Payment Now
                     </button>
 
                     <!-- Trial Fallback option -->
                     <form action="{{ route('onboard.process_trial', ['tenant_hash' => $tenant_hash]) }}" method="POST" class="mt-3">
                         @csrf
-                        <button type="submit" class="btn btn-outline-light btn-block btn-sm">
-                            Or Start 14-Day Free Trial
+                        <button type="submit" class="btn btn-outline-glass btn-block btn-sm py-2 rounded-pill">
+                            Or Start 14-Day Free Trial Instead
                         </button>
                     </form>
                 </div>
