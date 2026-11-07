@@ -364,111 +364,119 @@ $staff = $users->where('user_type', '<>', 'student')->where('user_type', '<>', '
 
 @if (Qs::userIsTeacher())
 {{-- Teacher Workspace Overview --}}
-<div class="card border-left-3 border-left-primary mb-3">
-    <div class="card-header header-elements-inline">
-        <h6 class="card-title font-weight-bold text-primary">
-            <i class="material-symbols-rounded align-middle mr-1">school</i>
-            My Teacher Workspace
+<div class="card border-0 mb-4 shadow-sm" style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 16px;">
+    <div class="card-header d-flex justify-content-between align-items-center py-3 px-4" style="background: transparent; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+        <h6 class="card-title font-weight-bold text-white mb-0 d-flex align-items-center">
+            <div class="rounded-circle p-2 d-inline-flex mr-2.5" style="background: rgba(37, 99, 235, 0.15); color: #3b82f6;">
+                <i class="material-symbols-rounded" style="font-size: 20px;">school</i>
+            </div>
+            <span>My Teacher Workspace</span>
         </h6>
         <div class="header-elements">
-            <span class="badge badge-light border">Teacher Profile</span>
+            <span class="badge badge-pill px-3 py-1 font-size-xs font-weight-semibold" style="background: rgba(255, 255, 255, 0.06); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08);">Teacher Profile</span>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body p-4">
         <div class="row">
             {{-- Class Teacher Status Card --}}
-            <div class="col-md-6 mb-3">
-                <div class="card border h-100 shadow-none">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
-                        <h6 class="font-weight-semibold mb-0">
-                            <i class="material-symbols-rounded font-size-sm align-middle mr-1 text-primary">meeting_room</i>
-                            Class Teacher Assignments
-                        </h6>
-                        @if(isset($is_class_teacher) && $is_class_teacher)
-                            <span class="badge badge-success">Assigned</span>
-                        @else
-                            <span class="badge badge-light">None</span>
-                        @endif
-                    </div>
-                    <div class="card-body">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="h-100 p-3 rounded-lg d-flex flex-column justify-content-between" style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2.5 border-bottom" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                            <span class="font-weight-bold text-white d-flex align-items-center font-size-sm">
+                                <i class="material-symbols-rounded mr-2 text-primary font-size-sm">meeting_room</i>
+                                Class Teacher Assignments
+                            </span>
+                            @if(isset($is_class_teacher) && $is_class_teacher)
+                                <span class="badge badge-pill badge-success px-2.5 py-1 font-size-xs">Assigned</span>
+                            @else
+                                <span class="badge badge-pill px-2.5 py-1 font-size-xs" style="background: rgba(255, 255, 255, 0.08); color: #94a3b8;">None</span>
+                            @endif
+                        </div>
+
                         @if(isset($my_sections) && $my_sections->isNotEmpty())
-                            <div class="list-group list-group-flush mb-3">
+                            <div class="mb-3">
                                 @foreach($my_sections as $sec)
-                                    <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                    <div class="p-3 mb-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
                                         <div>
-                                            <strong class="text-dark">{{ $sec->my_class->name ?? 'Class' }} - {{ $sec->name }}</strong>
-                                            <div class="text-muted font-size-xs">
-                                                {{ $sec->student_record ? $sec->student_record->where('grad', 0)->count() : 0 }} Registered Students |
+                                            <div class="text-white font-weight-semibold font-size-sm">{{ $sec->my_class->name ?? 'Class' }} - {{ $sec->name }}</div>
+                                            <div class="text-muted font-size-xs mt-1">
+                                                {{ $sec->student_record ? $sec->student_record->where('grad', 0)->count() : 0 }} Registered Students &bull;
                                                 {{ $sec->my_class ? $sec->my_class->subjects->count() : 0 }} Inherited Subjects
                                             </div>
                                         </div>
-                                        <div class="btn-group">
-                                            <a href="{{ route('teacher.class_detail', $sec->id) }}" class="btn btn-sm btn-outline-primary" title="View Class Roster">
+                                        <div class="btn-group ml-2">
+                                            <a href="{{ route('teacher.class_detail', $sec->id) }}" class="btn btn-sm btn-outline-glass px-2 py-1" title="View Class Roster">
                                                 <i class="material-symbols-rounded font-size-sm">visibility</i>
                                             </a>
-                                            <a href="{{ route('attendance.show', [$sec->id, date('Y-m-d')]) }}" class="btn btn-sm btn-outline-success ml-1" title="Mark Daily Attendance">
+                                            <a href="{{ route('attendance.show', [$sec->id, date('Y-m-d')]) }}" class="btn btn-sm btn-outline-glass px-2 py-1 ml-1" title="Mark Daily Attendance" style="color: #4ade80 !important; border-color: rgba(74, 222, 128, 0.3) !important;">
                                                 <i class="material-symbols-rounded font-size-sm">edit_calendar</i>
                                             </a>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            <a href="{{ route('teacher.my_class') }}" class="btn btn-sm btn-primary btn-block">
-                                <i class="material-symbols-rounded font-size-sm mr-1">meeting_room</i> Open Class Teacher Dashboard
-                            </a>
                         @else
-                            <p class="text-muted font-size-sm mb-0 py-2">
-                                <i class="material-symbols-rounded font-size-sm align-middle text-muted mr-1">info</i>
+                            <p class="text-muted font-size-sm mb-3 py-2">
+                                <i class="material-symbols-rounded font-size-sm align-middle mr-1">info</i>
                                 You are not currently assigned as a Class Teacher to any class section.
                             </p>
                         @endif
                     </div>
+                    @if(isset($my_sections) && $my_sections->isNotEmpty())
+                        <a href="{{ route('teacher.my_class') }}" class="btn btn-sm btn-primary btn-block py-2 font-weight-semibold rounded-pill d-flex align-items-center justify-content-center" style="background: #2563eb; border-color: #2563eb; height: 42px;">
+                            <i class="material-symbols-rounded font-size-sm mr-1.5">meeting_room</i> Open Class Teacher Dashboard
+                        </a>
+                    @endif
                 </div>
             </div>
 
             {{-- Subject Teacher Status Card --}}
-            <div class="col-md-6 mb-3">
-                <div class="card border h-100 shadow-none">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
-                        <h6 class="font-weight-semibold mb-0">
-                            <i class="material-symbols-rounded font-size-sm align-middle mr-1 text-primary">menu_book</i>
-                            Subject Teacher Assignments
-                        </h6>
-                        @if(isset($is_subject_teacher) && $is_subject_teacher)
-                            <span class="badge badge-success">Assigned</span>
-                        @else
-                            <span class="badge badge-light">None</span>
-                        @endif
-                    </div>
-                    <div class="card-body">
+            <div class="col-md-6">
+                <div class="h-100 p-3 rounded-lg d-flex flex-column justify-content-between" style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px;">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-2.5 border-bottom" style="border-color: rgba(255, 255, 255, 0.08) !important;">
+                            <span class="font-weight-bold text-white d-flex align-items-center font-size-sm">
+                                <i class="material-symbols-rounded mr-2 text-primary font-size-sm">menu_book</i>
+                                Subject Teacher Assignments
+                            </span>
+                            @if(isset($is_subject_teacher) && $is_subject_teacher)
+                                <span class="badge badge-pill badge-success px-2.5 py-1 font-size-xs">Assigned</span>
+                            @else
+                                <span class="badge badge-pill px-2.5 py-1 font-size-xs" style="background: rgba(255, 255, 255, 0.08); color: #94a3b8;">None</span>
+                            @endif
+                        </div>
+
                         @if(isset($my_subject_records) && $my_subject_records->isNotEmpty())
-                            <div class="list-group list-group-flush mb-3">
+                            <div class="mb-3">
                                 @foreach($my_subject_records->take(4) as $srec)
-                                    <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                                    <div class="p-3 mb-2 rounded d-flex justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px;">
                                         <div>
-                                            <strong class="text-dark">{{ $srec->subject->name ?? 'Subject' }}</strong>
-                                            <div class="text-muted font-size-xs">
-                                                Class: {{ $srec->section->my_class->name ?? ($srec->subject->my_class->name ?? 'All') }} - Section {{ $srec->section->name ?? 'All' }}
+                                            <div class="text-white font-weight-semibold font-size-sm">{{ $srec->subject->name ?? 'Subject' }}</div>
+                                            <div class="text-muted font-size-xs mt-1">
+                                                Class: {{ $srec->section->my_class->name ?? ($srec->subject->my_class->name ?? 'All') }} &bull; Section {{ $srec->section->name ?? 'All' }}
                                             </div>
                                         </div>
                                         @if($srec->section_id && $srec->subject_id)
-                                            <a href="{{ route('teacher.subject_students', [$srec->subject_id, $srec->section_id]) }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ route('teacher.subject_students', [$srec->subject_id, $srec->section_id]) }}" class="btn btn-sm btn-outline-glass px-2.5 py-1 font-size-xs d-flex align-items-center" style="color: #60a5fa !important; border-color: rgba(96, 165, 250, 0.3) !important;">
                                                 <i class="material-symbols-rounded font-size-sm mr-1">groups</i> Students
                                             </a>
                                         @endif
                                     </div>
                                 @endforeach
                             </div>
-                            <a href="{{ route('teacher.my_subjects') }}" class="btn btn-sm btn-primary btn-block">
-                                <i class="material-symbols-rounded font-size-sm mr-1">menu_book</i> View All Assigned Subjects ({{ $my_subject_records->count() }})
-                            </a>
                         @else
-                            <p class="text-muted font-size-sm mb-0 py-2">
-                                <i class="material-symbols-rounded font-size-sm align-middle text-muted mr-1">info</i>
+                            <p class="text-muted font-size-sm mb-3 py-2">
+                                <i class="material-symbols-rounded font-size-sm align-middle mr-1">info</i>
                                 You are not currently assigned to any subjects.
                             </p>
                         @endif
                     </div>
+                    @if(isset($my_subject_records) && $my_subject_records->isNotEmpty())
+                        <a href="{{ route('teacher.my_subjects') }}" class="btn btn-sm btn-primary btn-block py-2 font-weight-semibold rounded-pill d-flex align-items-center justify-content-center" style="background: #2563eb; border-color: #2563eb; height: 42px;">
+                            <i class="material-symbols-rounded font-size-sm mr-1.5">menu_book</i> View All Assigned Subjects ({{ $my_subject_records->count() }})
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

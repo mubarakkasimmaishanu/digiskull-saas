@@ -37,9 +37,9 @@
 
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
-            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary-blue: #2563eb;
+            --primary-blue-hover: #1d4ed8;
+            --card-bg: rgba(30, 41, 59, 0.5);
             --card-border: rgba(255, 255, 255, 0.08);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
@@ -53,22 +53,8 @@
             overflow-x: hidden;
         }
 
-        /* Subtle radial background glow */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 1000px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
         .navbar-saas {
-            background-color: rgba(11, 15, 25, 0.85) !important;
+            background-color: rgba(11, 15, 25, 0.95) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -77,39 +63,41 @@
         }
 
         .brand-gradient {
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #ffffff;
+            font-weight: 700;
         }
 
         .btn-gradient-primary {
-            background: var(--primary-gradient);
+            background: #2563eb;
             color: #ffffff !important;
-            border: none;
+            border: 1px solid #3b82f6;
             font-weight: 600;
-            box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
-            transition: all 0.25s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
         }
 
         .btn-gradient-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+            background: #1d4ed8;
+            border-color: #2563eb;
             color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
 
         .btn-outline-glass {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: #ffffff !important;
             font-weight: 600;
             backdrop-filter: blur(8px);
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-outline-glass:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff !important;
+            transform: translateY(-1px);
         }
 
         .nav-link-saas {
@@ -121,7 +109,7 @@
         }
 
         .nav-link-saas:hover, .nav-link-saas.active {
-            color: #38bdf8 !important;
+            color: #ffffff !important;
         }
 
         .glass-card {
@@ -133,38 +121,38 @@
         }
 
         .feature-card {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(30, 41, 59, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 16px;
             padding: 2rem;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
 
         .feature-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(56, 189, 248, 0.3);
-            box-shadow: 0 12px 30px -10px rgba(14, 165, 233, 0.2);
-            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.4);
+            background: rgba(30, 41, 59, 0.7);
         }
 
         .plan-card {
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(30, 41, 59, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 20px;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             position: relative;
         }
 
         .plan-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.5);
         }
 
         .plan-card.popular {
-            border: 2px solid #0ea5e9;
-            background: linear-gradient(180deg, rgba(14, 165, 233, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);
-            box-shadow: 0 0 35px -5px rgba(14, 165, 233, 0.25);
+            border: 1px solid #3b82f6;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.5);
         }
 
         .footer-saas {

@@ -1,9 +1,9 @@
-<div class="navbar navbar-expand-lg login py-2 px-3 px-md-4 d-flex justify-content-between align-items-center flex-wrap flex-shrink-0" style="min-height: 44px;">
-    <span class="navbar-text d-flex align-items-center text-muted font-size-xs mb-0">
+<div class="navbar navbar-expand-lg login py-3 px-3 px-md-4 d-flex justify-content-between align-items-center flex-column flex-sm-row flex-shrink-0" style="min-height: 44px;">
+    <span class="navbar-text text-muted font-size-xs mb-2 mb-sm-0 text-center text-sm-left">
         <span>&copy; {{ date('Y') }} Digiskul. All rights reserved.</span>
     </span>
 
-    <ul class="navbar-nav ml-auto d-flex flex-row align-items-center mb-0">
+    <ul class="navbar-nav d-flex flex-row align-items-center justify-content-center flex-wrap mb-0">
         <li class="nav-item mr-3">
             <a href="{{ route('privacy_policy') }}" class="text-muted hover-light font-size-xs d-flex align-items-center" target="_blank">
                 <i class="material-symbols-rounded mr-1 font-size-xs">policy</i> <span>Privacy Policy</span>

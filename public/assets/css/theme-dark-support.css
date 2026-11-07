@@ -3,36 +3,78 @@
    Ensures seamless visibility for text, cards, list groups, badges, & tables
    ========================================================================== */
 
+:root {
+    --sidebar-item-active-bg-color: #2563eb !important;
+}
+
+[data-theme="dark"]:root {
+    --sidebar-item-active-bg-color: #2563eb !important;
+}
+
 /* 1. Global Dark Theme List Group & Card Adaptations */
+.list-group-flush,
+.list-group,
+[data-theme="dark"] .list-group {
+    background-color: transparent !important;
+}
+
+.list-group-item,
 [data-theme="dark"] .list-group-item {
     background-color: transparent !important;
     color: #e2e8f0 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+.list-group-item strong,
+.list-group-item b,
 [data-theme="dark"] .list-group-item strong,
 [data-theme="dark"] .list-group-item b {
     color: #ffffff !important;
 }
 
+.list-group-item span:not(.badge),
+.list-group-item div,
 [data-theme="dark"] .list-group-item span:not(.badge),
 [data-theme="dark"] .list-group-item div {
     color: inherit;
 }
 
+/* Ensure nested cards and card bodies never show white background */
+.card .card,
+[data-theme="dark"] .card .card {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.card .card .card-body,
+[data-theme="dark"] .card .card .card-body {
+    background-color: transparent !important;
+}
+
+.card .card .card-header,
+[data-theme="dark"] .card .card .card-header {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #f8fafc !important;
+}
+
 /* 2. Bg-white & Bg-light overrides for Dark Mode */
+.bg-white,
 [data-theme="dark"] .bg-white {
     background-color: #1e252b !important;
     color: #f1f5f9 !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+.bg-light,
 [data-theme="dark"] .bg-light {
     background-color: rgba(255, 255, 255, 0.04) !important;
     color: #e2e8f0 !important;
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+.card-header.bg-white,
+.card-footer.bg-white,
 [data-theme="dark"] .card-header.bg-white,
 [data-theme="dark"] .card-footer.bg-white {
     background-color: #1e252b !important;
@@ -40,6 +82,8 @@
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+.card-header.bg-light,
+.card-footer.bg-light,
 [data-theme="dark"] .card-header.bg-light,
 [data-theme="dark"] .card-footer.bg-light {
     background-color: rgba(255, 255, 255, 0.04) !important;
@@ -47,17 +91,43 @@
     border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
+.card.border,
 [data-theme="dark"] .card.border {
     border-color: rgba(255, 255, 255, 0.09) !important;
 }
 
 /* 3. Text contrast overrides */
+.text-dark,
 [data-theme="dark"] .text-dark {
     color: #f8fafc !important;
 }
 
+.text-muted,
 [data-theme="dark"] .text-muted {
     color: #94a3b8 !important;
+}
+
+/* Sidebar Active State */
+.sidebar .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar .card[class*="bg-"]:not(.bg-light):not(.bg-white):not(.bg-transparent) .nav-sidebar .nav-item > .nav-link.active,
+.sidebar .nav-sidebar > .nav-item-open > .nav-link:not(.disabled) {
+    background-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+/* Glass Outline Button */
+.btn-outline-glass {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #f1f5f9 !important;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.btn-outline-glass:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
 }
 
 [data-theme="dark"] .text-slate-700,

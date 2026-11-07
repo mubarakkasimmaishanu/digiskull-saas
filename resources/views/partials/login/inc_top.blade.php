@@ -31,7 +31,8 @@
 
 <style>
     :root {
-        --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+        --primary-blue: #2563eb;
+        --primary-blue-hover: #1d4ed8;
     }
 
     html, body {
@@ -39,9 +40,7 @@
         background-color: #0b0f19 !important;
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         color: #cbd5e1;
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
+        min-height: 100%;
         margin: 0;
         padding: 0;
     }
@@ -49,35 +48,20 @@
     body.login-layout-body {
         display: flex;
         flex-direction: column;
-        height: 100vh;
-        max-height: 100vh;
-        overflow: hidden;
+        min-height: 100vh;
+        background-color: #0b0f19 !important;
     }
 
     div.page-content.login-cover {
         background-image: none !important;
         background: #0b0f19 !important;
-        flex: 1 1 auto;
+        flex: 1 0 auto;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
-        overflow: hidden;
-        padding: 10px 15px;
-    }
-
-    /* Ambient glow */
-    div.page-content.login-cover::before {
-        content: '';
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 600px;
-        height: 380px;
-        background: radial-gradient(circle, rgba(14, 165, 233, 0.12) 0%, rgba(99, 102, 241, 0.05) 50%, transparent 70%);
-        pointer-events: none;
-        z-index: 0;
+        padding: 2.5rem 1rem;
+        width: 100%;
     }
 
     .text-color-custom {
@@ -85,7 +69,7 @@
     }
 
     .navbar.login {
-        background-color: rgba(11, 15, 25, 0.9) !important;
+        background-color: rgba(11, 15, 25, 0.95) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -93,7 +77,7 @@
     }
 
     .navbar-expand-lg.login {
-        background-color: rgba(11, 15, 25, 0.9) !important;
+        background-color: rgba(11, 15, 25, 0.95) !important;
         border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
@@ -101,41 +85,77 @@
     }
 
     .btn-gradient-primary {
-        background: var(--primary-gradient);
+        background: #2563eb;
         color: #ffffff !important;
-        border: none;
+        border: 1px solid #3b82f6;
         font-weight: 600;
-        box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.39);
-        transition: all 0.25s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
     }
 
     .btn-gradient-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5);
+        background: #1d4ed8;
+        border-color: #2563eb;
         color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
     }
 
     .btn-outline-glass {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
         color: #ffffff !important;
         font-weight: 500;
         backdrop-filter: blur(8px);
-        transition: all 0.25s ease;
+        transition: all 0.2s ease;
     }
 
     .btn-outline-glass:hover {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
         color: #ffffff !important;
+        transform: translateY(-1px);
     }
 
     .glass-card-login {
-        background: rgba(30, 41, 59, 0.7) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 18px !important;
-        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6) !important;
+        background: rgba(20, 27, 45, 0.85) !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 20px !important;
+        box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05) !important;
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+    }
+
+    .login-form-input {
+        background-color: rgba(15, 23, 42, 0.7) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: #f8fafc !important;
+        height: 46px !important;
+        border-radius: 10px !important;
+        font-size: 0.925rem !important;
+        transition: all 0.2s ease;
+    }
+
+    .login-form-input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        background-color: rgba(15, 23, 42, 0.95) !important;
+    }
+
+    .login-input-addon {
+        background-color: rgba(15, 23, 42, 0.8) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        border-right: none !important;
+        color: #94a3b8 !important;
+        border-top-left-radius: 10px !important;
+        border-bottom-left-radius: 10px !important;
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .login-input-addon + .login-form-input {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-left: none !important;
     }
 </style>

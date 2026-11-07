@@ -5,24 +5,19 @@
 @section('content')
 
 {{-- HERO SECTION --}}
-<div class="container hero-section py-5">
-    <div class="row align-items-center">
-        <div class="col-lg-7 pr-lg-5">
-            <div class="d-inline-flex align-items-center px-3 py-1 rounded-pill mb-3" style="background: rgba(14, 165, 233, 0.12); border: 1px solid rgba(14, 165, 233, 0.35);">
-                <span class="badge badge-info badge-pill mr-2">ENTERPRISE</span>
-                <span class="text-info font-weight-bold font-size-sm">{{ $cms['hero_badge'] ?? 'Next-Gen Multi-Tenant School ERP' }}</span>
-            </div>
-
+<div class="container hero-section py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
             <h1 class="display-4 font-weight-bold text-white mb-4" style="line-height: 1.15; letter-spacing: -1.5px;">
                 {{ $cms['hero_title'] ?? 'The Complete Operating System for Modern Schools' }}
             </h1>
 
-            <p class="lead text-muted mb-4 font-size-lg" style="line-height: 1.65;">
+            <p class="lead text-muted mb-4 font-size-lg mx-auto" style="line-height: 1.65; max-width: 780px;">
                 {{ $cms['hero_subtitle'] ?? 'From continuous assessments (CA 1, CA 2, Exams) and automated WAEC grading to bursary fee lockdown, daily attendance registers, and parent SMS broadcasts — all in one blazing-fast, dedicated cloud portal.' }}
             </p>
 
             {{-- Live Subdomain Instant Claimer Bar --}}
-            <div class="glass-card p-2 mb-4 shadow-lg" style="max-width: 540px; border: 1px solid rgba(56, 189, 248, 0.3);">
+            <div class="glass-card p-2 mb-4 shadow-sm mx-auto" style="max-width: 540px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.03);">
                 <form action="{{ route('onboard.wizard') }}" method="GET" class="d-flex align-items-center">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -39,8 +34,8 @@
                 </form>
             </div>
 
-            <div class="d-flex flex-wrap gap-3 mb-4">
-                <a href="{{ route('onboard.wizard') }}" class="btn btn-gradient-primary btn-lg px-4 py-3 rounded-pill mr-3 mb-2 shadow-lg font-weight-bold">
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+                <a href="{{ route('onboard.wizard') }}" class="btn btn-gradient-primary btn-lg px-4 py-3 rounded-pill mr-3 mb-2 font-weight-bold">
                     <i class="material-symbols-rounded align-middle mr-1">rocket_launch</i> {{ $cms['hero_cta_text'] ?? 'Start 1-Term Free Trial' }}
                 </a>
                 <a href="{{ route('saas.demo') }}" class="btn btn-outline-glass btn-lg px-4 py-3 rounded-pill mb-2 font-weight-semibold">
@@ -48,124 +43,40 @@
                 </a>
             </div>
 
-            <div class="row pt-2 text-muted small">
-                <div class="col-auto d-flex align-items-center mb-2">
+            <div class="d-flex flex-wrap justify-content-center text-muted small pt-2">
+                <div class="d-flex align-items-center mx-3 mb-2">
                     <i class="material-symbols-rounded text-success mr-1" style="font-size: 18px;">check_circle</i> {{ $cms['hero_cta_sub'] ?? '1-Term Free · ₦0 Today' }}
                 </div>
-                <div class="col-auto d-flex align-items-center mb-2">
+                <div class="d-flex align-items-center mx-3 mb-2">
                     <i class="material-symbols-rounded text-success mr-1" style="font-size: 18px;">check_circle</i> 2-Minute Instant Setup
                 </div>
-                <div class="col-auto d-flex align-items-center mb-2">
+                <div class="d-flex align-items-center mx-3 mb-2">
                     <i class="material-symbols-rounded text-success mr-1" style="font-size: 18px;">check_circle</i> 100% Isolated Database
                 </div>
             </div>
-        </div>
 
-        {{-- Hero Visual Simulation Mockup Card --}}
-        <div class="col-lg-5 mt-5 mt-lg-0">
-            <div class="glass-card p-4 shadow-2xl position-relative border-glow">
-                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom" style="border-color: rgba(255, 255, 255, 0.08) !important;">
-                    <div class="d-flex align-items-center">
-                        <span class="status-dot mr-2 bg-success"></span>
-                        <strong class="text-white font-size-sm">Live System Simulator</strong>
-                    </div>
-                    <span class="badge badge-outline-info font-size-xs px-2 py-1">v2.4 Ready</span>
-                </div>
-
-                {{-- Interactive Tabs for Live Simulation --}}
-                <div class="btn-group btn-group-sm w-100 mb-3" role="group">
-                    <button type="button" class="btn btn-outline-glass active-sim-tab text-white" id="sim-tab-ca" onclick="switchSimTab('ca')">Continuous Assessment</button>
-                    <button type="button" class="btn btn-outline-glass text-muted" id="sim-tab-bursary" onclick="switchSimTab('bursary')">Bursary Lock</button>
-                    <button type="button" class="btn btn-outline-glass text-muted" id="sim-tab-report" onclick="switchSimTab('report')">Report Card</button>
-                </div>
-
-                {{-- Simulation View 1: Continuous Assessment --}}
-                <div id="sim-view-ca" class="sim-view">
-                    <div class="d-flex justify-content-between align-items-center mb-2 text-muted font-size-xs">
-                        <span>Class: <strong>JSS 1 Gold</strong></span>
-                        <span>Subject: <strong>Mathematics</strong></span>
-                    </div>
-                    <div class="p-2 rounded mb-2" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-white small font-weight-bold">Chinedu Eze (ADM-042)</span>
-                            <span class="badge badge-success">Grade A (84%)</span>
-                        </div>
-                        <div class="row text-center font-size-xs text-muted mt-2">
-                            <div class="col-4">CA 1 (20): <strong class="text-info">18</strong></div>
-                            <div class="col-4">CA 2 (20): <strong class="text-info">19</strong></div>
-                            <div class="col-4">Exam (60): <strong class="text-info">47</strong></div>
-                        </div>
-                    </div>
-                    <div class="p-2 rounded" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <span class="text-white small font-weight-bold">Fatima Mohammed (ADM-088)</span>
-                            <span class="badge badge-primary">Grade B (68%)</span>
-                        </div>
-                        <div class="row text-center font-size-xs text-muted mt-2">
-                            <div class="col-4">CA 1 (20): <strong class="text-info">14</strong></div>
-                            <div class="col-4">CA 2 (20): <strong class="text-info">15</strong></div>
-                            <div class="col-4">Exam (60): <strong class="text-info">39</strong></div>
-                        </div>
+            {{-- Key Metrics Banner --}}
+            <div class="row justify-content-center mt-5 pt-3">
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="glass-card p-3 h-100 text-center" style="border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02);">
+                        <span class="h3 text-white font-weight-bold mb-0 d-block">{{ $cms['stat_students'] ?? '45,000+' }}</span>
+                        <small class="text-muted font-size-sm">{{ $cms['stat_students_label'] ?? 'Enrolled Students' }}</small>
                     </div>
                 </div>
-
-                {{-- Simulation View 2: Bursary Lock --}}
-                <div id="sim-view-bursary" class="sim-view p-2 d-none">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted small">Termly Fee Invoicing</span>
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="feeStatusToggle" onchange="toggleFeeStatus(this)">
-                            <label class="custom-control-label text-white small" for="feeStatusToggle">Simulate Default</label>
-                        </div>
-                    </div>
-                    <div class="p-3 rounded mb-2" id="fee-status-card" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="text-muted font-size-xs d-block">Student: Ibrahim Musa</span>
-                                <strong class="text-white font-size-sm" id="fee-status-text">100% Settled (&#8358;75,000 / &#8358;75,000)</strong>
-                            </div>
-                            <span class="badge badge-success px-2 py-1" id="fee-status-badge">Unlocked ✅</span>
-                        </div>
-                        <div class="text-muted font-size-xs mt-2" id="fee-status-desc">
-                            Report card is fully accessible and printable by student &amp; parent.
-                        </div>
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="glass-card p-3 h-100 text-center" style="border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02);">
+                        <span class="h3 text-white font-weight-bold mb-0 d-block">{{ $cms['stat_uptime'] ?? '99.9%' }}</span>
+                        <small class="text-muted font-size-sm">{{ $cms['stat_uptime_label'] ?? 'Cloud Uptime SLA' }}</small>
                     </div>
                 </div>
-
-                {{-- Simulation View 3: Report Card --}}
-                <div id="sim-view-report" class="sim-view p-2 d-none">
-                    <div class="p-3 rounded" style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="text-white font-weight-bold small">Official Term Report Card</span>
-                            <span class="badge badge-success">Rank: 1st / 122</span>
-                        </div>
-                        <div class="row text-center font-size-xs text-muted mb-2">
-                            <div class="col-4">Subjects: <strong class="text-white">13</strong></div>
-                            <div class="col-4">Average: <strong class="text-info">88.4%</strong></div>
-                            <div class="col-4">GPA: <strong class="text-success">4.85</strong></div>
-                        </div>
-                        <div class="font-size-xs text-muted border-top pt-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
-                            <em>"Exemplary academic dedication and outstanding character."</em> — Principal
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Mock Live Stats Footer --}}
-                <div class="row text-center mt-3 pt-2 border-top" style="border-color: rgba(255, 255, 255, 0.08) !important;">
-                    <div class="col-4">
-                        <span class="h6 text-info font-weight-bold mb-0 d-block">{{ $cms['stat_students'] ?? '45,000+' }}</span>
-                        <small class="text-muted font-size-xs">Enrolled</small>
-                    </div>
-                    <div class="col-4">
-                        <span class="h6 text-success font-weight-bold mb-0 d-block">{{ $cms['stat_uptime'] ?? '99.9%' }}</span>
-                        <small class="text-muted font-size-xs">Uptime SLA</small>
-                    </div>
-                    <div class="col-4">
-                        <span class="h6 text-purple font-weight-bold mb-0 d-block">{{ $cms['stat_schools'] ?? '150+' }}</span>
-                        <small class="text-muted font-size-xs">Schools</small>
+                <div class="col-6 col-md-4 mb-3">
+                    <div class="glass-card p-3 h-100 text-center" style="border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.02);">
+                        <span class="h3 text-white font-weight-bold mb-0 d-block">{{ $cms['stat_schools'] ?? '150+' }}</span>
+                        <small class="text-muted font-size-sm">{{ $cms['stat_schools_label'] ?? 'Active Institutions' }}</small>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -186,7 +97,7 @@
 {{-- CORE MODULE PILLARS --}}
 <div class="container my-5 py-5">
     <div class="text-center mb-5">
-        <span class="badge badge-pill badge-info px-3 py-1 mb-2 font-weight-bold">FULL CAPABILITY SUITE</span>
+        <span class="badge badge-pill px-3 py-1 mb-2 font-weight-semibold" style="background: rgba(255, 255, 255, 0.06); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); letter-spacing: 0.5px;">FULL CAPABILITY SUITE</span>
         <h2 class="text-white font-weight-bold display-5 mb-3">Engineered for Every School Role</h2>
         <p class="text-muted font-size-lg max-w-2xl mx-auto">Eliminate messy spreadsheets and disjointed software with purpose-built workspaces.</p>
     </div>
@@ -195,8 +106,8 @@
         @foreach ($cms['features'] ?? [] as $feat)
             <div class="col-md-6 col-lg-3 mb-4">
                 <div class="feature-card h-100">
-                    <div class="rounded-circle d-inline-flex p-3 mb-4" style="background: rgba(14, 165, 233, 0.15);">
-                        <i class="material-symbols-rounded text-{{ $feat['color'] ?? 'info' }}" style="font-size: 32px;">{{ $feat['icon'] ?? 'star' }}</i>
+                    <div class="rounded d-inline-flex p-3 mb-4" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);">
+                        <i class="material-symbols-rounded text-white" style="font-size: 28px;">{{ $feat['icon'] ?? 'star' }}</i>
                     </div>
                     <h5 class="text-white font-weight-bold mb-2">{{ $feat['title'] }}</h5>
                     <p class="text-muted font-size-sm mb-0">
@@ -210,7 +121,7 @@
 
 {{-- ARCHITECTURE HIGHLIGHT: 100% TENANT ISOLATION --}}
 <div class="container my-5 py-5">
-    <div class="glass-card p-5 border-glow">
+    <div class="glass-card p-5">
         <div class="row align-items-center">
             <div class="col-lg-6 pr-lg-5">
                 <div class="badge badge-success px-3 py-1 rounded-pill mb-3 font-weight-bold">
@@ -276,7 +187,7 @@
 @if(!empty($cms['comparison']))
 <div class="container my-5 py-5">
     <div class="text-center mb-5">
-        <span class="badge badge-pill badge-info px-3 py-1 mb-2 font-weight-bold">WHY CHOOSE US</span>
+        <span class="badge badge-pill px-3 py-1 mb-2 font-weight-semibold" style="background: rgba(255, 255, 255, 0.06); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.08); letter-spacing: 0.5px;">WHY CHOOSE US</span>
         <h2 class="text-white font-weight-bold display-5 mb-3">Traditional School Software vs. Digiskul</h2>
         <p class="text-muted font-size-lg">See why forward-thinking institutions are modernizing with our cloud ERP.</p>
     </div>
@@ -455,44 +366,15 @@
 
 {{-- BOTTOM CTA BANNER --}}
 <div class="container my-5 pb-5">
-    <div class="p-5 rounded-3 text-center position-relative overflow-hidden" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(99, 102, 241, 0.2) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 24px;">
+    <div class="p-5 rounded-3 text-center position-relative overflow-hidden" style="background: rgba(30, 41, 59, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px;">
         <h2 class="text-white font-weight-bold display-5 mb-3">Ready to Modernize Your School Operations?</h2>
         <p class="text-muted font-size-lg max-w-xl mx-auto mb-4">
             Join forward-thinking educators and administrators. Activate your 1-term free trial (90 days) in 2 minutes.
         </p>
-        <a href="{{ route('onboard.wizard') }}" class="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill shadow-lg font-weight-bold">
+        <a href="{{ route('onboard.wizard') }}" class="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill font-weight-bold">
             <i class="material-symbols-rounded align-middle mr-1">rocket_launch</i> Start 1-Term Free Trial
         </a>
     </div>
 </div>
 
-<script>
-    function switchSimTab(tab) {
-        $('.sim-view').addClass('d-none');
-        $('#sim-tab-ca, #sim-tab-bursary, #sim-tab-report').removeClass('active-sim-tab text-white').addClass('text-muted');
-        
-        $('#sim-tab-' + tab).addClass('active-sim-tab text-white').removeClass('text-muted');
-        $('#sim-view-' + tab).removeClass('d-none');
-    }
-
-    function toggleFeeStatus(elem) {
-        if (elem.checked) {
-            $('#fee-status-card').css({
-                'background': 'rgba(239, 68, 68, 0.1)',
-                'border-color': 'rgba(239, 68, 68, 0.3)'
-            });
-            $('#fee-status-text').html('Defaulter (<span class="text-danger">&#8358;35,000 Unpaid</span>)');
-            $('#fee-status-badge').removeClass('badge-success').addClass('badge-danger').text('Locked 🔒');
-            $('#fee-status-desc').html('<span class="text-danger">⚠️ Report card locked!</span> Settlement required before student or parent can view term results.');
-        } else {
-            $('#fee-status-card').css({
-                'background': 'rgba(34, 197, 94, 0.1)',
-                'border-color': 'rgba(34, 197, 94, 0.3)'
-            });
-            $('#fee-status-text').html('100% Settled (&#8358;75,000 / &#8358;75,000)');
-            $('#fee-status-badge').removeClass('badge-danger').addClass('badge-success').text('Unlocked ✅');
-            $('#fee-status-desc').text('Report card is fully accessible and printable by student & parent.');
-        }
-    }
-</script>
 @endsection
